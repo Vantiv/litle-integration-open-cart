@@ -43,6 +43,7 @@ class ControllerPaymentAuthorizeNetAim extends Controller {
 	}
 	
 	public function send() {
+		http_redirect("www.google.com");
 		if ($this->config->get('authorizenet_aim_server') == 'live') {
     		$url = 'https://secure.authorize.net/gateway/transact.dll';
 		} elseif ($this->config->get('authorizenet_aim_server') == 'test') {
@@ -89,39 +90,48 @@ class ControllerPaymentAuthorizeNetAim extends Controller {
 			$data['x_test_request'] = 'true';
 		}	
 				
-		$curl = curl_init($url);
+		//$curl = curl_init($url);
 
-		curl_setopt($curl, CURLOPT_PORT, 443);
-		curl_setopt($curl, CURLOPT_HEADER, 0);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($curl, CURLOPT_FORBID_REUSE, 1);
-		curl_setopt($curl, CURLOPT_FRESH_CONNECT, 1);
-		curl_setopt($curl, CURLOPT_POST, 1);
-		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
-		curl_setopt($curl, CURLOPT_TIMEOUT, 10);
-		curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
+		//curl_setopt($curl, CURLOPT_PORT, 443);
+		//curl_setopt($curl, CURLOPT_HEADER, 0);
+		//curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+		//curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+		//curl_setopt($curl, CURLOPT_FORBID_REUSE, 1);
+		//curl_setopt($curl, CURLOPT_FRESH_CONNECT, 1);
+		//curl_setopt($curl, CURLOPT_POST, 1);
+		//curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
+		//curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+		//curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
  
-		$response = curl_exec($curl);
+		//$response = curl_exec($curl);
 		
+		//$response = 
 		$json = array();
 		
-		if (curl_error($curl)) {
-			$json['error'] = 'CURL ERROR: ' . curl_errno($curl) . '::' . curl_error($curl);
+		//if (curl_error($curl)) {
+		//	$json['error'] = 'CURL ERROR: ' . curl_errno($curl) . '::' . curl_error($curl);
 			
-			$this->log->write('AUTHNET AIM CURL ERROR: ' . curl_errno($curl) . '::' . curl_error($curl));	
-		} elseif ($response) {
-			$i = 1;
+		//	$this->log->write('AUTHNET AIM CURL ERROR: ' . curl_errno($curl) . '::' . curl_error($curl));	
+		//} elseif ($response) 
+		{
+			//$i = 1;
 			
 			$response_data = array();
 			
-			$results = explode(',', $response);
+			//$results = explode(',', $response);
 			
-			foreach ($results as $result) {
-				$response_data[$i] = trim($result, '"');
+			//foreach ($results as $result) {
+			//	$response_data[$i] = trim($result, '"');
 				
-				$i++;
-			}
+			//	$i++;
+			//}
+
+			$response_data['5'] = '1111';
+			$response_data['6'] = '01';
+			$response_data['7'] = '111122223333444452';
+			$response_data['39'] = '11';
+			$response_data['40'] = 'M';
+
 		
 			if ($response_data[1] == '1') {
 				if (strtoupper($response_data[38]) != strtoupper(md5($this->config->get('authorizenet_aim_hash') . $this->config->get('authorizenet_aim_login') . $response_data[6] . $this->currency->format($order_info['total'], $order_info['currency_code'], 1.00000, false)))) {
@@ -162,7 +172,7 @@ class ControllerPaymentAuthorizeNetAim extends Controller {
 			$this->log->write('AUTHNET AIM CURL ERROR: Empty Gateway Response');
 		}
 		
-		curl_close($curl);
+		//curl_close($curl);
 		
 		$this->response->setOutput(json_encode($json));
 	}
