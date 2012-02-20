@@ -1,2 +1,4 @@
 .project
-
+admin/config.php
+image/cache
+system/cache
