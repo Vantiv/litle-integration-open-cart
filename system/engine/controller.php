@@ -25,6 +25,7 @@ abstract class Controller {
 	}
 
 	protected function redirect($url, $status = 302) {
+		echo "in redirect";
 		header('Status: ' . $status);
 		header('Location: ' . str_replace('&amp;', '&', $url));
 		exit();

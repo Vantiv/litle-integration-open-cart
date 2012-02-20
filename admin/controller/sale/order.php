@@ -319,6 +319,29 @@ class ControllerSaleOrder extends Controller {
 				'href' => $this->url->link('sale/order/info', 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
 			);
 			
+			$litleActionText = "";
+			$litleActionHref = "";
+			if($result['order_status_id'] == 1){	// Pending
+				$litleActionText = "Capture";
+				$litleActionHref = "payment/litle/capture";
+			}
+			else if($result['order_status_id'] == 2 || $result['order_status_id'] == 3 || 
+					$result['order_status_id'] == 7 || $result['order_status_id'] == 5 || 
+					$result['order_status_id'] == 15){
+				$litleActionText = "Refund";
+				$litleActionHref = "payment/litle/refund";;
+			}
+			else if($result['order_status_id'] == 14){
+				$litleActionText = "Re-Authorize";
+				$litleActionHref = "payment/litle/reauthorize";
+			}
+			
+			$litleAction = array();
+			$litleAction[] = array(
+				'text' => $litleActionText,
+				'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
+			);
+			
 			/*
 			Commented out until I can finish the order editing system.
 			$action[] = array(
@@ -335,7 +358,8 @@ class ControllerSaleOrder extends Controller {
 				'date_added'    => date($this->language->get('date_format_short'), strtotime($result['date_added'])),
 				'date_modified' => date($this->language->get('date_format_short'), strtotime($result['date_modified'])),
 				'selected'      => isset($this->request->post['selected']) && in_array($result['order_id'], $this->request->post['selected']),
-				'action'        => $action
+				'action'        => $action,
+				'litleAction'	=> $litleAction
 			);
 		}
 
@@ -351,7 +375,8 @@ class ControllerSaleOrder extends Controller {
 		$this->data['column_date_added'] = $this->language->get('column_date_added');
 		$this->data['column_date_modified'] = $this->language->get('column_date_modified');
 		$this->data['column_action'] = $this->language->get('column_action');
-
+		$this->data['column_litle_actions'] = "Litle Actions";
+		
 		$this->data['button_invoice'] = $this->language->get('button_invoice');
 		$this->data['button_delete'] = $this->language->get('button_delete');
 		$this->data['button_filter'] = $this->language->get('button_filter');
