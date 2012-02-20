@@ -28,7 +28,7 @@ class ControllerPaymentLitle extends Controller {
 		$this->data['text_authorization'] = $this->language->get('text_authorization');
 		$this->data['text_sale'] = $this->language->get('text_sale');
 
-		$this->data['entry_email'] = $this->language->get('entry_email');
+		$this->data['merchant_id'] = $this->language->get('merchant_id');
 		$this->data['entry_test'] = $this->language->get('entry_test');
 		$this->data['entry_transaction'] = $this->language->get('entry_transaction');
 		$this->data['entry_pdt_token'] = $this->language->get('entry_pdt_token');
@@ -57,10 +57,10 @@ class ControllerPaymentLitle extends Controller {
 			$this->data['error_warning'] = '';
 		}
 
- 		if (isset($this->error['email'])) {
-			$this->data['error_email'] = $this->error['email'];
+ 		if (isset($this->error['merchant_id'])) {
+			$this->data['error_merchant_id'] = $this->error['merchant_id'];
 		} else {
-			$this->data['error_email'] = '';
+			$this->data['error_merchant_id'] = '';
 		}
 
 		$this->data['breadcrumbs'] = array();
@@ -87,10 +87,10 @@ class ControllerPaymentLitle extends Controller {
 
 		$this->data['cancel'] = $this->url->link('extension/payment', 'token=' . $this->session->data['token'], 'SSL');
 
-		if (isset($this->request->post['pp_standard_email'])) {
-			$this->data['pp_standard_email'] = $this->request->post['pp_standard_email'];
+		if (isset($this->request->post['litle_merchant_id'])) {
+			$this->data['litle_merchant_id'] = $this->request->post['litle_merchant_id'];
 		} else {
-			$this->data['pp_standard_email'] = $this->config->get('pp_standard_email');
+			$this->data['litle_merchant_id'] = $this->config->get('litle_merchant_id');
 		}
 
 		if (isset($this->request->post['pp_standard_test'])) {
@@ -251,8 +251,8 @@ class ControllerPaymentLitle extends Controller {
 			$this->error['warning'] = $this->language->get('error_permission');
 		}
 
-		if (!$this->request->post['pp_standard_email']) {
-			$this->error['email'] = $this->language->get('error_email');
+		if (!$this->request->post['litle_merchant_id']) {
+			$this->error['merchant_id'] = $this->language->get('error_merchant_id');
 		}
 
 		if (!$this->error) {

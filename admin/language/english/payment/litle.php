@@ -10,7 +10,7 @@ $_['text_authorization']			 = 'Authorization';
 $_['text_sale']						 = 'Sale';
 
 // Entry
-$_['entry_email']					 = 'E-Mail:';
+$_['merchant_id']					 = 'Merchant ID:';
 $_['entry_test']					 = 'Sandbox Mode:';
 $_['entry_transaction']				 = 'Transaction Method:';
 $_['entry_pdt_token']				 = 'PDT Token:<br/><span class="help">Payment Data Transfer Token is used for additional security and reliability. Find out how to enable PDT <a href="https://cms.paypal.com/us/cgi-bin/?&cmd=_render-content&content_ID=developer/howto_html_paymentdatatransfer" alt="">here</a></span>';
@@ -32,5 +32,5 @@ $_['entry_sort_order']				 = 'Sort Order:';
 
 // Error
 $_['error_permission']				 = 'Warning: You do not have permission to modify payment PayPal!';
-$_['error_email']					 = 'E-Mail required!';
+$_['error_merchant_id']				 = 'Merchant ID required!';
 ?>
