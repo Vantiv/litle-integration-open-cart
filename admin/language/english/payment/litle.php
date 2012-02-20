@@ -10,7 +10,7 @@ $_['text_authorization']			 = 'Authorization';
 $_['text_sale']						 = 'Sale';
 
 // Entry
-$_['merchant_id']					 = 'Merchant ID:';
+$_['merchant_id']					 = 'Merchant ID:<br/><span class="help">This is the merchant ID provided to you when you signed up with Litle. Find out how to get your merchant ID <a href="http://www.litle.com/" alt="litle.com">here</a></span>';
 $_['entry_test']					 = 'Sandbox Mode:';
 $_['entry_transaction']				 = 'Transaction Method:';
 $_['entry_pdt_token']				 = 'PDT Token:<br/><span class="help">Payment Data Transfer Token is used for additional security and reliability. Find out how to enable PDT <a href="https://cms.paypal.com/us/cgi-bin/?&cmd=_render-content&content_ID=developer/howto_html_paymentdatatransfer" alt="">here</a></span>';
