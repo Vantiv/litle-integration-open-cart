@@ -24,32 +24,51 @@
               <?php } ?></td>
           </tr>
           <tr>
+            <td><span class="required">*</span> <?php echo $merchant_user_name; ?></td>
+            <td><input type="text" name="litle_merchant_user_name" value="<?php echo $litle_merchant_user_name; ?>" />
+              <?php if ($error_merchant_user_name) { ?>
+              <span class="error"><?php echo $error_merchant_user_name; ?></span>
+              <?php } ?></td>
+          </tr>
+          <tr>
+            <td><span class="required">*</span> <?php echo $merchant_password; ?></td>
+            <td><input type="password" name="litle_merchant_password" value="<?php echo $litle_merchant_password; ?>" />
+              <?php if ($error_merchant_password) { ?>
+              <span class="error"><?php echo $error_merchant_password; ?></span>
+              <?php } ?></td>
+          </tr>
+          <tr>
+            <td><?php echo $default_report_group; ?></td>
+            <td><input type="text" name="litle_default_report_group" value="<?php echo $litle_default_report_group; ?>" />
+            </td>
+          </tr>
+          <tr>
             <td><?php echo $entry_pdt_token; ?></td>
-            <td><input type="text" name="pp_standard_pdt_token" value="<?php echo $pp_standard_pdt_token; ?>" size="50" /></td>
+            <td><input type="text" name="litle_pdt_token" value="<?php echo $litle_pdt_token; ?>" size="50" /></td>
           </tr>
           <tr>
             <td><?php echo $entry_test; ?></td>
-            <td><?php if ($pp_standard_test) { ?>
-              <input type="radio" name="pp_standard_test" value="1" checked="checked" />
+            <td><?php if ($litle_test) { ?>
+              <input type="radio" name="litle_test" value="1" checked="checked" />
               <?php echo $text_yes; ?>
-              <input type="radio" name="pp_standard_test" value="0" />
+              <input type="radio" name="litle_test" value="0" />
               <?php echo $text_no; ?>
               <?php } else { ?>
-              <input type="radio" name="pp_standard_test" value="1" />
+              <input type="radio" name="litle_test" value="1" />
               <?php echo $text_yes; ?>
-              <input type="radio" name="pp_standard_test" value="0" checked="checked" />
+              <input type="radio" name="litle_test" value="0" checked="checked" />
               <?php echo $text_no; ?>
               <?php } ?></td>
           </tr>
           <tr>
             <td><?php echo $entry_transaction; ?></td>
-            <td><select name="pp_standard_transaction">
-                <?php if (!$pp_standard_transaction) { ?>
+            <td><select name="litle_transaction">
+                <?php if (!$litle_transaction) { ?>
                 <option value="0" selected="selected"><?php echo $text_authorization; ?></option>
                 <?php } else { ?>
                 <option value="0"><?php echo $text_authorization; ?></option>
                 <?php } ?>
-                <?php if ($pp_standard_transaction) { ?>
+                <?php if ($litle_transaction) { ?>
                 <option value="1" selected="selected"><?php echo $text_sale; ?></option>
                 <?php } else { ?>
                 <option value="1"><?php echo $text_sale; ?></option>
@@ -58,8 +77,8 @@
           </tr>
           <tr>
             <td><?php echo $entry_debug; ?></td>
-            <td><select name="pp_standard_debug">
-                <?php if ($pp_standard_debug) { ?>
+            <td><select name="litle_debug">
+                <?php if ($litle_debug) { ?>
                 <option value="1" selected="selected"><?php echo $text_enabled; ?></option>
                 <option value="0"><?php echo $text_disabled; ?></option>
                 <?php } else { ?>
@@ -70,14 +89,14 @@
           </tr>
           <tr>
             <td><?php echo $entry_total; ?></td>
-            <td><input type="text" name="pp_standard_total" value="<?php echo $pp_standard_total; ?>" /></td>
+            <td><input type="text" name="litle_total" value="<?php echo $litle_total; ?>" /></td>
           </tr>
           <tr>
             <td><?php echo $entry_geo_zone; ?></td>
-            <td><select name="pp_standard_geo_zone_id">
+            <td><select name="litle_geo_zone_id">
                 <option value="0"><?php echo $text_all_zones; ?></option>
                 <?php foreach ($geo_zones as $geo_zone) { ?>
-                <?php if ($geo_zone['geo_zone_id'] == $pp_standard_geo_zone_id) { ?>
+                <?php if ($geo_zone['geo_zone_id'] == $litle_geo_zone_id) { ?>
                 <option value="<?php echo $geo_zone['geo_zone_id']; ?>" selected="selected"><?php echo $geo_zone['name']; ?></option>
                 <?php } else { ?>
                 <option value="<?php echo $geo_zone['geo_zone_id']; ?>"><?php echo $geo_zone['name']; ?></option>
@@ -87,8 +106,8 @@
           </tr>
           <tr>
             <td><?php echo $entry_status; ?></td>
-            <td><select name="pp_standard_status">
-                <?php if ($pp_standard_status) { ?>
+            <td><select name="litle_status">
+                <?php if ($litle_status) { ?>
                 <option value="1" selected="selected"><?php echo $text_enabled; ?></option>
                 <option value="0"><?php echo $text_disabled; ?></option>
                 <?php } else { ?>
@@ -99,7 +118,7 @@
           </tr>
           <tr>
             <td><?php echo $entry_sort_order; ?></td>
-            <td><input type="text" name="pp_standard_sort_order" value="<?php echo $pp_standard_sort_order; ?>" size="1" /></td>
+            <td><input type="text" name="litle_sort_order" value="<?php echo $litle_sort_order; ?>" size="1" /></td>
           </tr>
         </table>
       </form>

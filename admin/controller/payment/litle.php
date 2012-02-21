@@ -29,21 +29,15 @@ class ControllerPaymentLitle extends Controller {
 		$this->data['text_sale'] = $this->language->get('text_sale');
 
 		$this->data['merchant_id'] = $this->language->get('merchant_id');
+		$this->data['merchant_user_name'] = $this->language->get('merchant_user_name');
+		$this->data['merchant_password'] = $this->language->get('merchant_password');
+		$this->data['default_report_group'] = $this->language->get('default_report_group');
 		$this->data['entry_test'] = $this->language->get('entry_test');
 		$this->data['entry_transaction'] = $this->language->get('entry_transaction');
 		$this->data['entry_pdt_token'] = $this->language->get('entry_pdt_token');
 		$this->data['entry_debug'] = $this->language->get('entry_debug');
 		$this->data['entry_total'] = $this->language->get('entry_total');	
-		$this->data['entry_canceled_reversal_status'] = $this->language->get('entry_canceled_reversal_status');
-		$this->data['entry_completed_status'] = $this->language->get('entry_completed_status');
-		$this->data['entry_denied_status'] = $this->language->get('entry_denied_status');
-		$this->data['entry_expired_status'] = $this->language->get('entry_expired_status');
-		$this->data['entry_failed_status'] = $this->language->get('entry_failed_status');
-		$this->data['entry_pending_status'] = $this->language->get('entry_pending_status');
-		$this->data['entry_processed_status'] = $this->language->get('entry_processed_status');
-		$this->data['entry_refunded_status'] = $this->language->get('entry_refunded_status');
-		$this->data['entry_reversed_status'] = $this->language->get('entry_reversed_status');
-		$this->data['entry_voided_status'] = $this->language->get('entry_voided_status');
+
 		$this->data['entry_geo_zone'] = $this->language->get('entry_geo_zone');
 		$this->data['entry_status'] = $this->language->get('entry_status');
 		$this->data['entry_sort_order'] = $this->language->get('entry_sort_order');
@@ -62,6 +56,19 @@ class ControllerPaymentLitle extends Controller {
 		} else {
 			$this->data['error_merchant_id'] = '';
 		}
+		
+		if (isset($this->error['merchant_user_name'])) {
+			$this->data['error_merchant_user_name'] = $this->error['merchant_user_name'];
+		} else {
+			$this->data['error_merchant_user_name'] = '';
+		}
+		
+		if (isset($this->error['merchant_password'])) {
+			$this->data['error_merchant_password'] = $this->error['merchant_password'];
+		} else {
+			$this->data['error_merchant_password'] = '';
+		}
+		
 
 		$this->data['breadcrumbs'] = array();
 
@@ -92,121 +99,84 @@ class ControllerPaymentLitle extends Controller {
 		} else {
 			$this->data['litle_merchant_id'] = $this->config->get('litle_merchant_id');
 		}
-
-		if (isset($this->request->post['pp_standard_test'])) {
-			$this->data['pp_standard_test'] = $this->request->post['pp_standard_test'];
+		
+		if (isset($this->request->post['litle_merchant_user_name'])) {
+			$this->data['litle_merchant_user_name'] = $this->request->post['litle_merchant_user_name'];
 		} else {
-			$this->data['pp_standard_test'] = $this->config->get('pp_standard_test');
-		}
-
-		if (isset($this->request->post['pp_standard_transaction'])) {
-			$this->data['pp_standard_transaction'] = $this->request->post['pp_standard_transaction'];
-		} else {
-			$this->data['pp_standard_transaction'] = $this->config->get('pp_standard_transaction');
-		}
-
-		if (isset($this->request->post['pp_standard_pdt_token'])) {
-			$this->data['pp_standard_pdt_token'] = $this->request->post['pp_standard_pdt_token'];
-		} else {
-			$this->data['pp_standard_pdt_token'] = $this->config->get('pp_standard_pdt_token');
-		}
-
-		if (isset($this->request->post['pp_standard_debug'])) {
-			$this->data['pp_standard_debug'] = $this->request->post['pp_standard_debug'];
-		} else {
-			$this->data['pp_standard_debug'] = $this->config->get('pp_standard_debug');
+			$this->data['litle_merchant_user_name'] = $this->config->get('litle_merchant_user_name');
 		}
 		
-		if (isset($this->request->post['pp_standard_total'])) {
-			$this->data['pp_standard_total'] = $this->request->post['pp_standard_total'];
+		if (isset($this->request->post['litle_merchant_password'])) {
+			$this->data['litle_merchant_password'] = $this->request->post['litle_merchant_password'];
 		} else {
-			$this->data['pp_standard_total'] = $this->config->get('pp_standard_total'); 
-		} 
-
-		if (isset($this->request->post['pp_standard_canceled_reversal_status_id'])) {
-			$this->data['pp_standard_canceled_reversal_status_id'] = $this->request->post['pp_standard_canceled_reversal_status_id'];
-		} else {
-			$this->data['pp_standard_canceled_reversal_status_id'] = $this->config->get('pp_standard_canceled_reversal_status_id');
+			$this->data['litle_merchant_password'] = $this->config->get('litle_merchant_password');
 		}
 		
-		if (isset($this->request->post['pp_standard_completed_status_id'])) {
-			$this->data['pp_standard_completed_status_id'] = $this->request->post['pp_standard_completed_status_id'];
+		if (isset($this->request->post['litle_default_report_group'])) {
+			$this->data['litle_default_report_group'] = $this->request->post['litle_default_report_group'];
 		} else {
-			$this->data['pp_standard_completed_status_id'] = $this->config->get('pp_standard_completed_status_id');
-		}	
+			//$this->data['litle_default_report_group'] = $this->config->get('litle_default_report_group');
+			$this->data['litle_default_report_group'] = "Default Report Group";
+		}
+
+		if (isset($this->request->post['litle_test'])) {
+			$this->data['litle_test'] = $this->request->post['litle_test'];
+		} else {
+			$this->data['litle_test'] = $this->config->get('litle_test');
+		}
+
+		if (isset($this->request->post['litle_transaction'])) {
+			$this->data['litle_transaction'] = $this->request->post['litle_transaction'];
+		} else {
+			$this->data['litle_transaction'] = $this->config->get('litle_transaction');
+		}
+
+		if (isset($this->request->post['litle_pdt_token'])) {
+			$this->data['litle_pdt_token'] = $this->request->post['litle_pdt_token'];
+		} else {
+			$this->data['litle_pdt_token'] = $this->config->get('litle_pdt_token');
+		}
+
+		if (isset($this->request->post['litle_debug'])) {
+			$this->data['litle_debug'] = $this->request->post['litle_debug'];
+		} else {
+			$this->data['litle_debug'] = $this->config->get('litle_debug');
+		}
 		
-		if (isset($this->request->post['pp_standard_denied_status_id'])) {
-			$this->data['pp_standard_denied_status_id'] = $this->request->post['pp_standard_denied_status_id'];
+		if (isset($this->request->post['litle_total'])) {
+			$this->data['litle_total'] = $this->request->post['litle_total'];
 		} else {
-			$this->data['pp_standard_denied_status_id'] = $this->config->get('pp_standard_denied_status_id');
+			$this->data['litle_total'] = $this->config->get('litle_total'); 
 		}
 		
-		if (isset($this->request->post['pp_standard_expired_status_id'])) {
-			$this->data['pp_standard_expired_status_id'] = $this->request->post['pp_standard_expired_status_id'];
-		} else {
-			$this->data['pp_standard_expired_status_id'] = $this->config->get('pp_standard_expired_status_id');
-		}
-				
-		if (isset($this->request->post['pp_standard_failed_status_id'])) {
-			$this->data['pp_standard_failed_status_id'] = $this->request->post['pp_standard_failed_status_id'];
-		} else {
-			$this->data['pp_standard_failed_status_id'] = $this->config->get('pp_standard_failed_status_id');
-		}	
-								
-		if (isset($this->request->post['pp_standard_pending_status_id'])) {
-			$this->data['pp_standard_pending_status_id'] = $this->request->post['pp_standard_pending_status_id'];
-		} else {
-			$this->data['pp_standard_pending_status_id'] = $this->config->get('pp_standard_pending_status_id');
-		}
-									
-		if (isset($this->request->post['pp_standard_processed_status_id'])) {
-			$this->data['pp_standard_processed_status_id'] = $this->request->post['pp_standard_processed_status_id'];
-		} else {
-			$this->data['pp_standard_processed_status_id'] = $this->config->get('pp_standard_processed_status_id');
-		}
-
-		if (isset($this->request->post['pp_standard_refunded_status_id'])) {
-			$this->data['pp_standard_refunded_status_id'] = $this->request->post['pp_standard_refunded_status_id'];
-		} else {
-			$this->data['pp_standard_refunded_status_id'] = $this->config->get('pp_standard_refunded_status_id');
-		}
-
-		if (isset($this->request->post['pp_standard_reversed_status_id'])) {
-			$this->data['pp_standard_reversed_status_id'] = $this->request->post['pp_standard_reversed_status_id'];
-		} else {
-			$this->data['pp_standard_reversed_status_id'] = $this->config->get('pp_standard_reversed_status_id');
-		}
-
-		if (isset($this->request->post['pp_standard_voided_status_id'])) {
-			$this->data['pp_standard_voided_status_id'] = $this->request->post['pp_standard_voided_status_id'];
-		} else {
-			$this->data['pp_standard_voided_status_id'] = $this->config->get('pp_standard_voided_status_id');
-		}
+		$this->data['litle_timeout'] = 65;
+		$this->data['litle_proxy_addr'] = "smoothproxy";
+		$this->data['litle_proxy_port'] = "8080";
 
 		$this->load->model('localisation/order_status');
 
 		$this->data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
 
-		if (isset($this->request->post['pp_standard_geo_zone_id'])) {
-			$this->data['pp_standard_geo_zone_id'] = $this->request->post['pp_standard_geo_zone_id'];
+		if (isset($this->request->post['litle_geo_zone_id'])) {
+			$this->data['litle_geo_zone_id'] = $this->request->post['litle_geo_zone_id'];
 		} else {
-			$this->data['pp_standard_geo_zone_id'] = $this->config->get('pp_standard_geo_zone_id');
+			$this->data['litle_geo_zone_id'] = $this->config->get('litle_geo_zone_id');
 		}
 
 		$this->load->model('localisation/geo_zone');
 
 		$this->data['geo_zones'] = $this->model_localisation_geo_zone->getGeoZones();
 
-		if (isset($this->request->post['pp_standard_status'])) {
-			$this->data['pp_standard_status'] = $this->request->post['pp_standard_status'];
+		if (isset($this->request->post['litle_status'])) {
+			$this->data['litle_status'] = $this->request->post['litle_status'];
 		} else {
-			$this->data['pp_standard_status'] = $this->config->get('pp_standard_status');
+			$this->data['litle_status'] = $this->config->get('litle_status');
 		}
 		
-		if (isset($this->request->post['pp_standard_sort_order'])) {
-			$this->data['pp_standard_sort_order'] = $this->request->post['pp_standard_sort_order'];
+		if (isset($this->request->post['litle_sort_order'])) {
+			$this->data['litle_sort_order'] = $this->request->post['litle_sort_order'];
 		} else {
-			$this->data['pp_standard_sort_order'] = $this->config->get('pp_standard_sort_order');
+			$this->data['litle_sort_order'] = $this->config->get('litle_sort_order');
 		}
 
 		$this->template = 'payment/litle.tpl';
@@ -218,6 +188,32 @@ class ControllerPaymentLitle extends Controller {
 		$this->response->setOutput($this->render());
 	}
 	
+	private function validate() {
+		if (!$this->user->hasPermission('modify', 'payment/litle')) {
+			$this->error['warning'] = $this->language->get('error_permission');
+		}
+	
+		if (!$this->request->post['litle_merchant_id']) {
+			$this->error['merchant_id'] = $this->language->get('error_merchant_id');
+		}
+		
+		if (!$this->request->post['litle_merchant_user_name']) {
+			$this->error['merchant_user_name'] = $this->language->get('error_merchant_user_name');
+		}
+		
+		if (!$this->request->post['litle_merchant_password']) {
+			$this->error['merchant_password'] = $this->language->get('error_merchant_password');
+		}
+	
+		if (!$this->error) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	// ##############################################################################
+	// ################ Call handlers from Orders Page -- admin side ################
 	public function capture() {
 		echo "in capture!";
 		echo $this->request->get['order_id'];
@@ -244,22 +240,6 @@ class ControllerPaymentLitle extends Controller {
 	
 	public function reauthorize() {
 		echo "in reauthorize!";
-	}
-
-	private function validate() {
-		if (!$this->user->hasPermission('modify', 'payment/litle')) {
-			$this->error['warning'] = $this->language->get('error_permission');
-		}
-
-		if (!$this->request->post['litle_merchant_id']) {
-			$this->error['merchant_id'] = $this->language->get('error_merchant_id');
-		}
-
-		if (!$this->error) {
-			return true;
-		} else {
-			return false;
-		}
 	}
 }
 ?>
