@@ -311,10 +311,10 @@ class ControllerSaleOrder extends Controller {
 
 		$results = $this->model_sale_order->getOrders($data);
 		
+		$this->load->language('payment/litle');
+		$litlePaymentMethod = $this->language->get('text_payment_method');
     	foreach ($results as $result) {
-    		
 			$action = array();
-						
 			$action[] = array(
 				'text' => $this->language->get('text_view'),
 				'href' => $this->url->link('sale/order/info', 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
@@ -323,19 +323,19 @@ class ControllerSaleOrder extends Controller {
 			$litleActionText = "";
 			$litleActionHref = "";
 			$litleAction = array();
-			if($result['payment_method'] == 'Credit Card / Debit Card (Litle & Co.)') {
+			if($result['payment_method'] == $litlePaymentMethod) {
 				if($result['order_status_id'] == 1){ // Pending
-					$litleActionText = "Capture";
+					$litleActionText = $this->language->get('text_capture');
 					$litleActionHref = "payment/litle/capture";
 				}
 				else if($result['order_status_id'] == 2 || $result['order_status_id'] == 3 || 
 						$result['order_status_id'] == 7 || $result['order_status_id'] == 5 || 
 						$result['order_status_id'] == 15){
-					$litleActionText = "Refund";
+					$litleActionText = $this->language->get('text_refund');
 					$litleActionHref = "payment/litle/refund";;
 				}
 				else if($result['order_status_id'] == 14){
-					$litleActionText = "Re-Authorize";
+					$litleActionText = $this->language->get('text_reauth');
 					$litleActionHref = "payment/litle/reauthorize";
 				}
 				echo "Litle Action is " . $litleActionText;

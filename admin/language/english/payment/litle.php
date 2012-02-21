@@ -12,6 +12,10 @@ $_['text_cert']						 = 'Cert';
 $_['text_sandbox']					 = 'Sandbox';
 $_['text_precert']					 = 'PreCert';
 $_['text_production']				 = 'Production';
+$_['text_payment_method']			 = 'Credit Card / Debit Card (Litle & Co.)';
+$_['text_capture']       			 = 'Capture';
+$_['text_refund']		        	 = 'Refund';
+$_['text_reauth']			         = 'Re-Authorize';
 
 // Entry
 $_['merchant_id']					 = 'Merchant ID:<br/><span class="help">This is the merchant ID provided to you when you signed up with Litle. Find out how to get your merchant ID <a href="http://www.litle.com/" alt="litle.com">here</a></span>';
