@@ -310,9 +310,9 @@ class ControllerSaleOrder extends Controller {
 		$order_total = $this->model_sale_order->getTotalOrders($data);
 
 		$results = $this->model_sale_order->getOrders($data);
-		echo "Results is " . $results;
+		
     	foreach ($results as $result) {
-    		echo "hi";
+    		
 			$action = array();
 						
 			$action[] = array(
@@ -322,26 +322,29 @@ class ControllerSaleOrder extends Controller {
 			
 			$litleActionText = "";
 			$litleActionHref = "";
-			if($result['order_status_id'] == 1){	// Pending
-				$litleActionText = "Capture";
-				$litleActionHref = "payment/litle/capture";
-			}
-			else if($result['order_status_id'] == 2 || $result['order_status_id'] == 3 || 
-					$result['order_status_id'] == 7 || $result['order_status_id'] == 5 || 
-					$result['order_status_id'] == 15){
-				$litleActionText = "Refund";
-				$litleActionHref = "payment/litle/refund";;
-			}
-			else if($result['order_status_id'] == 14){
-				$litleActionText = "Re-Authorize";
-				$litleActionHref = "payment/litle/reauthorize";
-			}
-			echo "Litle Action is " . $litleActionText;
 			$litleAction = array();
-			$litleAction[] = array(
-				'text' => $litleActionText,
-				'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
-			);
+			if($result['payment_method'] == 'Credit Card / Debit Card (Litle & Co.)') {
+				if($result['order_status_id'] == 1){ // Pending
+					$litleActionText = "Capture";
+					$litleActionHref = "payment/litle/capture";
+				}
+				else if($result['order_status_id'] == 2 || $result['order_status_id'] == 3 || 
+						$result['order_status_id'] == 7 || $result['order_status_id'] == 5 || 
+						$result['order_status_id'] == 15){
+					$litleActionText = "Refund";
+					$litleActionHref = "payment/litle/refund";;
+				}
+				else if($result['order_status_id'] == 14){
+					$litleActionText = "Re-Authorize";
+					$litleActionHref = "payment/litle/reauthorize";
+				}
+				echo "Litle Action is " . $litleActionText;
+				
+				$litleAction[] = array(
+					'text' => $litleActionText,
+					'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
+				);
+			}
 			
 			/*
 			Commented out until I can finish the order editing system.
