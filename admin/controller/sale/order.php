@@ -310,8 +310,9 @@ class ControllerSaleOrder extends Controller {
 		$order_total = $this->model_sale_order->getTotalOrders($data);
 
 		$results = $this->model_sale_order->getOrders($data);
-
+		echo "Results is " . $results;
     	foreach ($results as $result) {
+    		echo "hi";
 			$action = array();
 						
 			$action[] = array(
@@ -335,7 +336,7 @@ class ControllerSaleOrder extends Controller {
 				$litleActionText = "Re-Authorize";
 				$litleActionHref = "payment/litle/reauthorize";
 			}
-			
+			echo "Litle Action is " . $litleActionText;
 			$litleAction = array();
 			$litleAction[] = array(
 				'text' => $litleActionText,
@@ -361,7 +362,7 @@ class ControllerSaleOrder extends Controller {
 				'action'        => $action,
 				'litleAction'	=> $litleAction
 			);
-		}
+		}		
 
 		$this->data['heading_title'] = $this->language->get('heading_title');
 

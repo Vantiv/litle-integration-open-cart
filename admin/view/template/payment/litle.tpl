@@ -43,35 +43,42 @@
             </td>
           </tr>
           <tr>
-            <td><?php echo $entry_pdt_token; ?></td>
-            <td><input type="text" name="litle_pdt_token" value="<?php echo $litle_pdt_token; ?>" size="50" /></td>
-          </tr>
-          <tr>
-            <td><?php echo $entry_test; ?></td>
-            <td><?php if ($litle_test) { ?>
-              <input type="radio" name="litle_test" value="1" checked="checked" />
-              <?php echo $text_yes; ?>
-              <input type="radio" name="litle_test" value="0" />
-              <?php echo $text_no; ?>
-              <?php } else { ?>
-              <input type="radio" name="litle_test" value="1" />
-              <?php echo $text_yes; ?>
-              <input type="radio" name="litle_test" value="0" checked="checked" />
-              <?php echo $text_no; ?>
-              <?php } ?></td>
+            <td><?php echo $entry_mode; ?></td>
+            <td><select name="litle_url">
+                <?php if ($litle_url == "sandbox") { ?>
+                <option value="sandbox" selected="selected"><?php echo $text_sandbox; ?></option>
+                <?php } else { ?>
+                <option value="sandbox"><?php echo $text_sandbox; ?></option>
+                <?php } ?>
+                <?php if ($litle_url == "precert") { ?>
+                <option value="precert" selected="selected"><?php echo $text_precert; ?></option>
+                <?php } else { ?>
+                <option value="precert"><?php echo $text_precert; ?></option>
+                <?php } ?>
+                <?php if ($litle_url == "cert") { ?>
+                <option value="cert" selected="selected"><?php echo $text_cert; ?></option>
+                <?php } else { ?>
+                <option value="cert"><?php echo $text_cert; ?></option>
+                <?php } ?>
+                <?php if ($litle_url == "production") { ?>
+                <option value="production" selected="selected"><?php echo $text_production; ?></option>
+                <?php } else { ?>
+                <option value="production"><?php echo $text_production; ?></option>
+                <?php } ?>
+              </select></td>
           </tr>
           <tr>
             <td><?php echo $entry_transaction; ?></td>
             <td><select name="litle_transaction">
-                <?php if (!$litle_transaction) { ?>
-                <option value="0" selected="selected"><?php echo $text_authorization; ?></option>
+                <?php if ($litle_transaction == "auth") { ?>
+                <option value="auth" selected="selected"><?php echo $text_authorization; ?></option>
                 <?php } else { ?>
-                <option value="0"><?php echo $text_authorization; ?></option>
+                <option value="auth"><?php echo $text_authorization; ?></option>
                 <?php } ?>
-                <?php if ($litle_transaction) { ?>
-                <option value="1" selected="selected"><?php echo $text_sale; ?></option>
+                <?php if ($litle_transaction == "sale") { ?>
+                <option value="sale" selected="selected"><?php echo $text_sale; ?></option>
                 <?php } else { ?>
-                <option value="1"><?php echo $text_sale; ?></option>
+                <option value="sale"><?php echo $text_sale; ?></option>
                 <?php } ?>
               </select></td>
           </tr>

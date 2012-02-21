@@ -6,7 +6,6 @@ class ControllerPaymentLitle extends Controller {
 		$this->load->language('payment/litle');
 
 		$this->document->setTitle($this->language->get('heading_title'));
-		//$this->document->setTitle("Litle");
 
 		$this->load->model('setting/setting');
 
@@ -27,14 +26,17 @@ class ControllerPaymentLitle extends Controller {
 		$this->data['text_no'] = $this->language->get('text_no');
 		$this->data['text_authorization'] = $this->language->get('text_authorization');
 		$this->data['text_sale'] = $this->language->get('text_sale');
+		$this->data['text_cert'] = $this->language->get('text_cert');
+		$this->data['text_precert'] = $this->language->get('text_precert');
+		$this->data['text_sandbox'] = $this->language->get('text_sandbox');
+		$this->data['text_production'] = $this->language->get('text_production');
 
 		$this->data['merchant_id'] = $this->language->get('merchant_id');
 		$this->data['merchant_user_name'] = $this->language->get('merchant_user_name');
 		$this->data['merchant_password'] = $this->language->get('merchant_password');
 		$this->data['default_report_group'] = $this->language->get('default_report_group');
-		$this->data['entry_test'] = $this->language->get('entry_test');
+		$this->data['entry_mode'] = $this->language->get('entry_mode');
 		$this->data['entry_transaction'] = $this->language->get('entry_transaction');
-		$this->data['entry_pdt_token'] = $this->language->get('entry_pdt_token');
 		$this->data['entry_debug'] = $this->language->get('entry_debug');
 		$this->data['entry_total'] = $this->language->get('entry_total');	
 
@@ -44,7 +46,7 @@ class ControllerPaymentLitle extends Controller {
 
 		$this->data['button_save'] = $this->language->get('button_save');
 		$this->data['button_cancel'] = $this->language->get('button_cancel');
-
+		
  		if (isset($this->error['warning'])) {
 			$this->data['error_warning'] = $this->error['warning'];
 		} else {
@@ -69,6 +71,11 @@ class ControllerPaymentLitle extends Controller {
 			$this->data['error_merchant_password'] = '';
 		}
 		
+		if (isset($this->error['url'])) {
+			$this->data['error_url'] = $this->error['url'];
+		} else {
+			$this->data['error_url'] = '';
+		}
 
 		$this->data['breadcrumbs'] = array();
 
@@ -115,26 +122,19 @@ class ControllerPaymentLitle extends Controller {
 		if (isset($this->request->post['litle_default_report_group'])) {
 			$this->data['litle_default_report_group'] = $this->request->post['litle_default_report_group'];
 		} else {
-			//$this->data['litle_default_report_group'] = $this->config->get('litle_default_report_group');
 			$this->data['litle_default_report_group'] = "Default Report Group";
 		}
 
-		if (isset($this->request->post['litle_test'])) {
-			$this->data['litle_test'] = $this->request->post['litle_test'];
+		if (isset($this->request->post['litle_url'])) {
+			$this->data['litle_url'] = $this->request->post['litle_url'];
 		} else {
-			$this->data['litle_test'] = $this->config->get('litle_test');
+			$this->data['litle_url'] = $this->config->get('litle_url');
 		}
 
 		if (isset($this->request->post['litle_transaction'])) {
 			$this->data['litle_transaction'] = $this->request->post['litle_transaction'];
 		} else {
 			$this->data['litle_transaction'] = $this->config->get('litle_transaction');
-		}
-
-		if (isset($this->request->post['litle_pdt_token'])) {
-			$this->data['litle_pdt_token'] = $this->request->post['litle_pdt_token'];
-		} else {
-			$this->data['litle_pdt_token'] = $this->config->get('litle_pdt_token');
 		}
 
 		if (isset($this->request->post['litle_debug'])) {
@@ -220,6 +220,8 @@ class ControllerPaymentLitle extends Controller {
 		
 		$order_id = $this->request->get['order_id'];
 		
+		$this->config->get['sandbox'];
+		
 		$this->load->model('sale/order');
 		$total_order_histories = $this->model_sale_order->getTotalOrderHistories($order_id);
 		$latest_order_history = $this->model_sale_order->getOrderHistories($order_id, $total_order_histories-1, 1);
@@ -242,4 +244,5 @@ class ControllerPaymentLitle extends Controller {
 		echo "in reauthorize!";
 	}
 }
+ 	
 ?>
