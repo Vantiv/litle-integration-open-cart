@@ -1,4 +1,5 @@
 <?php
+require_once($vqmod->modCheck(DIR_SYSTEM . 'library/litle/LitleOnline.php'));
 class ControllerPaymentLitle extends Controller {
 	private $error = array();
 
@@ -38,7 +39,7 @@ class ControllerPaymentLitle extends Controller {
 		$this->data['entry_mode'] = $this->language->get('entry_mode');
 		$this->data['entry_transaction'] = $this->language->get('entry_transaction');
 		$this->data['entry_debug'] = $this->language->get('entry_debug');
-		$this->data['entry_total'] = $this->language->get('entry_total');	
+		$this->data['entry_total'] = $this->language->get('entry_total');
 
 		$this->data['entry_geo_zone'] = $this->language->get('entry_geo_zone');
 		$this->data['entry_status'] = $this->language->get('entry_status');
@@ -46,31 +47,31 @@ class ControllerPaymentLitle extends Controller {
 
 		$this->data['button_save'] = $this->language->get('button_save');
 		$this->data['button_cancel'] = $this->language->get('button_cancel');
-		
- 		if (isset($this->error['warning'])) {
+
+		if (isset($this->error['warning'])) {
 			$this->data['error_warning'] = $this->error['warning'];
 		} else {
 			$this->data['error_warning'] = '';
 		}
 
- 		if (isset($this->error['merchant_id'])) {
+		if (isset($this->error['merchant_id'])) {
 			$this->data['error_merchant_id'] = $this->error['merchant_id'];
 		} else {
 			$this->data['error_merchant_id'] = '';
 		}
-		
+
 		if (isset($this->error['merchant_user_name'])) {
 			$this->data['error_merchant_user_name'] = $this->error['merchant_user_name'];
 		} else {
 			$this->data['error_merchant_user_name'] = '';
 		}
-		
+
 		if (isset($this->error['merchant_password'])) {
 			$this->data['error_merchant_password'] = $this->error['merchant_password'];
 		} else {
 			$this->data['error_merchant_password'] = '';
 		}
-		
+
 		if (isset($this->error['url'])) {
 			$this->data['error_url'] = $this->error['url'];
 		} else {
@@ -79,23 +80,23 @@ class ControllerPaymentLitle extends Controller {
 
 		$this->data['breadcrumbs'] = array();
 
-   		$this->data['breadcrumbs'][] = array(
+		$this->data['breadcrumbs'][] = array(
        		'text'      => $this->language->get('text_home'),
 			'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),      		
       		'separator' => false
-   		);
+		);
 
-   		$this->data['breadcrumbs'][] = array(
+		$this->data['breadcrumbs'][] = array(
        		'text'      => $this->language->get('text_payment'),
 			'href'      => $this->url->link('extension/payment', 'token=' . $this->session->data['token'], 'SSL'),
       		'separator' => ' :: '
-   		);
+		);
 
-   		$this->data['breadcrumbs'][] = array(
+		$this->data['breadcrumbs'][] = array(
        		'text'      => $this->language->get('heading_title'),
 			'href'      => $this->url->link('payment/litle', 'token=' . $this->session->data['token'], 'SSL'),
       		'separator' => ' :: '
-   		);
+		);
 
 		$this->data['action'] = $this->url->link('payment/litle', 'token=' . $this->session->data['token'], 'SSL');
 
@@ -106,19 +107,19 @@ class ControllerPaymentLitle extends Controller {
 		} else {
 			$this->data['litle_merchant_id'] = $this->config->get('litle_merchant_id');
 		}
-		
+
 		if (isset($this->request->post['litle_merchant_user_name'])) {
 			$this->data['litle_merchant_user_name'] = $this->request->post['litle_merchant_user_name'];
 		} else {
 			$this->data['litle_merchant_user_name'] = $this->config->get('litle_merchant_user_name');
 		}
-		
+
 		if (isset($this->request->post['litle_merchant_password'])) {
 			$this->data['litle_merchant_password'] = $this->request->post['litle_merchant_password'];
 		} else {
 			$this->data['litle_merchant_password'] = $this->config->get('litle_merchant_password');
 		}
-		
+
 		if (isset($this->request->post['litle_default_report_group'])) {
 			$this->data['litle_default_report_group'] = $this->request->post['litle_default_report_group'];
 		} else {
@@ -142,13 +143,13 @@ class ControllerPaymentLitle extends Controller {
 		} else {
 			$this->data['litle_debug'] = $this->config->get('litle_debug');
 		}
-		
+
 		if (isset($this->request->post['litle_total'])) {
 			$this->data['litle_total'] = $this->request->post['litle_total'];
 		} else {
-			$this->data['litle_total'] = $this->config->get('litle_total'); 
+			$this->data['litle_total'] = $this->config->get('litle_total');
 		}
-		
+
 		$this->data['litle_timeout'] = 65;
 		$this->data['litle_proxy_addr'] = "smoothproxy";
 		$this->data['litle_proxy_port'] = "8080";
@@ -172,7 +173,7 @@ class ControllerPaymentLitle extends Controller {
 		} else {
 			$this->data['litle_status'] = $this->config->get('litle_status');
 		}
-		
+
 		if (isset($this->request->post['litle_sort_order'])) {
 			$this->data['litle_sort_order'] = $this->request->post['litle_sort_order'];
 		} else {
@@ -184,65 +185,91 @@ class ControllerPaymentLitle extends Controller {
 			'common/header',
 			'common/footer'
 		);
-		
+
 		$this->response->setOutput($this->render());
 	}
-	
+
 	private function validate() {
 		if (!$this->user->hasPermission('modify', 'payment/litle')) {
 			$this->error['warning'] = $this->language->get('error_permission');
 		}
-	
+
 		if (!$this->request->post['litle_merchant_id']) {
 			$this->error['merchant_id'] = $this->language->get('error_merchant_id');
 		}
-		
+
 		if (!$this->request->post['litle_merchant_user_name']) {
 			$this->error['merchant_user_name'] = $this->language->get('error_merchant_user_name');
 		}
-		
+
 		if (!$this->request->post['litle_merchant_password']) {
 			$this->error['merchant_password'] = $this->language->get('error_merchant_password');
 		}
-	
+
 		if (!$this->error) {
 			return true;
 		} else {
 			return false;
 		}
 	}
-	
+
 	// ##############################################################################
 	// ################ Call handlers from Orders Page -- admin side ################
 	public function capture() {
 		echo "in capture!";
 		echo $this->request->get['order_id'];
-		
+
 		$order_id = $this->request->get['order_id'];
-		
+
 		$this->config->get['sandbox'];
-		
+
 		$this->load->model('sale/order');
 		$total_order_histories = $this->model_sale_order->getTotalOrderHistories($order_id);
 		$latest_order_history = $this->model_sale_order->getOrderHistories($order_id, $total_order_histories-1, 1);
-		
+
 		echo "total order histories: " . $total_order_histories;
 		echo "<br>";
-		
+
 		if( $latest_order_history )
-			echo "latest order history comment: " . $latest_order_history[0]['comment'];
+		echo "latest order history comment: " . $latest_order_history[0]['comment'];
 
 		preg_match("/.*Transaction ID: (\d+).*/", $latest_order_history[0]['comment'], $litleTxnID);
 		echo '<br><br>litle txn ID = ' . $litleTxnID[1];
+
+		//include (DIR_SYSTEM . 'library/litle_config.php');
 	}
-	
+
 	public function refund() {
+
 		echo "in refund!";
+		$hash_in = array(
+	      'amount'=>'106',
+	      'orderId' => '123213',
+	      'orderSource'=>'ecommerce',
+	      'card'=>array(
+	      'type'=>'VI',
+	      'number' =>'4100000000000001',
+	     'expDate' =>'1000')
+		);
+		
+		$hash_indices = array('amount', 'orderId', 'orderSource', 'card');
+
+		$initilaize = new LitleOnlineRequest();
+		$creditResponse = $initilaize->creditRequest($hash_in, $hash_indices);
+		
+		echo "<br><br><br><br><br><br><br><br><br><br><br><br>";
+		
+		// Display Result
+		$xmlParser = new XMLParser();
+		echo ("Message: " . $xmlParser->get_node($creditResponse,'message') . "<br><br>");
+		echo ("Litle Transaction ID: " . $xmlParser->get_node($creditResponse,'litleTxnId'));
+		
+		echo "still in refund";
 	}
-	
+
 	public function reauthorize() {
 		echo "in reauthorize!";
 	}
 }
- 	
+
 ?>
