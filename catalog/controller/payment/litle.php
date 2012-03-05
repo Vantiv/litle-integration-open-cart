@@ -125,7 +125,7 @@ class ControllerPaymentLitle extends Controller {
 		}
 		
 		$code = $response['code'];
-		$message = $response['message'] . '\nTransaction ID:' . $response['litleTxnId'] . '\n';
+		$message = $response['message'] . " \n Transaction ID: " . $response['litleTxnId'] . " \n";
 		
 		if($code == '000') { //Success
 			if($doingAuth) {

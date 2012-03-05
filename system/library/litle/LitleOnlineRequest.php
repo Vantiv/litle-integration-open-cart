@@ -23,7 +23,7 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-require_once realpath(dirname(__FILE__)) . '/LitleOnline.php';
+//require_once realpath(dirname(__FILE__)) . '/LitleOnline.php';
 
 class LitleOnlineRequest
 {
@@ -117,41 +117,30 @@ class LitleOnlineRequest
 		return $authReversalResponse;
 	}
 
-	public function creditRequest($hash_in, $hash_indices)
+	public function creditRequest($hash_in)
 	{
-		restore_error_handler();
 		$hash_out = array(
-					'litleTxnId' => $hash_in['litleTxnId'],
-					'orderId' =>$hash_in['orderId'],
-					'amount' =>$hash_in['amount'],
-					'orderSource'=>$hash_in['orderSource'],
-					'billToAddress'=>XMLFields::contact($hash_in['billToAddress']),
-					'card'=> XMLFields::cardType($hash_in['card'])
-					'paypal'=>XMLFields::credit_payPal($hash_in['paypal']),
-					'token'=>XMLFields::cardTokenType($hash_in['token']),
-					'paypage'=>XMLFields::cardPaypageType($hash_in['paypage']),
-					'customBilling'=>XMLFields::customBilling($hash_in['customBilling']),
-					'taxBilling'=>XMLFields::taxBilling($hash_in['taxBilling']),
-					'billMeLaterRequest'=>XMLFields::billMeLaterRequest($hash_in['billMeLaterRequest']),
-					'enhancedData'=>XMLFields::enhancedData($hash_in['enhancedData']),
-					'processingInstructions'=>XMLFields::processingInstructions($hash_in['processingInstructions']),
-					'pos'=>XMLFields::pos($hash_in['pos']),
-					'amexAggregatorData'=>XMLFields::amexAggregatorData($hash_in['amexAggregatorData']),
-					'payPalNotes' =>$hash_in['payPalNotes']
+					'litleTxnId' => XMLFields::returnArrayValue($hash_in, 'litleTxnId'),
+					'orderId' =>XMLFields::returnArrayValue($hash_in, 'orderId'),
+					'amount' =>XMLFields::returnArrayValue($hash_in, 'amount'),
+					'orderSource'=>XMLFields::returnArrayValue($hash_in, 'orderSource'),
+					'billToAddress'=>XMLFields::contact(XMLFields::returnArrayValue($hash_in, 'billToAddress')),
+					'card'=>XMLFields::cardType(XMLFields::returnArrayValue($hash_in, 'card')),
+					'paypal'=>XMLFields::credit_payPal(XMLFields::returnArrayValue($hash_in, 'paypal')),
+					'token'=>XMLFields::cardTokenType(XMLFields::returnArrayValue($hash_in, 'token')),
+					'paypage'=>XMLFields::cardPaypageType(XMLFields::returnArrayValue($hash_in, 'paypage')),
+					'customBilling'=>XMLFields::customBilling(XMLFields::returnArrayValue($hash_in, 'customBilling')),
+					'taxBilling'=>XMLFields::taxBilling(XMLFields::returnArrayValue($hash_in, 'taxBilling')),
+					'billMeLaterRequest'=>XMLFields::billMeLaterRequest(XMLFields::returnArrayValue($hash_in, 'billMeLaterRequest')),
+					'enhancedData'=>XMLFields::enhancedData(XMLFields::returnArrayValue($hash_in, 'enhancedData')),
+					'processingInstructions'=>XMLFields::processingInstructions(XMLFields::returnArrayValue($hash_in, 'processingInstructions')),
+					'pos'=>XMLFields::pos(XMLFields::returnArrayValue($hash_in, 'pos')),
+					'amexAggregatorData'=>XMLFields::amexAggregatorData(XMLFields::returnArrayValue($hash_in, 'amexAggregatorData')),
+					'payPalNotes' =>XMLFields::returnArrayValue($hash_in, 'payPalNotes')
 		);
-
-// 		$hash_out = array();
-
-//  		foreach ($hash_indices as $arrayIndex){
-//  			//$hash_out += $arrayIndex => $hash_in[$arrayIndex];
-//  			$hash_out[$arrayIndex] = $hash_in[$arrayIndex];
-//  		}
-
-		var_dump($hash_out);
 
 		$choice_hash = array($hash_out['card'],$hash_out['paypal'],$hash_out['token'],$hash_out['paypage']);
 		$creditResponse = LitleOnlineRequest::processRequest($hash_out,$hash_in,'credit',$choice_hash);
-		set_error_handler('error_handler');
 		return $creditResponse;
 	}
 
@@ -200,7 +189,13 @@ class LitleOnlineRequest
 		'processingInstructions'=>XMLFields::processingInstructions($hash_in['processingInstructions']),
 		'payPalOrderComplete'=>$hash_in['payPalOrderComplete'],
 		'payPalNotes' =>$hash_in['payPalNotes']);
+		echo "/$hash_out in captureRequest is: ";
+		var_dump($hash_out);
+		echo "<br>";
 		$captureResponse = LitleOnlineRequest::processRequest($hash_out,$hash_in,'capture');
+		echo "/$captureResponse is: ";
+		var_dump($captureResponse);
+		echo "<br>";
 		return $captureResponse;
 	}
 
