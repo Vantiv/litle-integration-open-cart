@@ -2,8 +2,12 @@
 <div id="payment">
   <table class="form">
     <tr>
-      <td><?php echo $entry_cc_owner; ?></td>
-      <td><input type="text" name="cc_owner" value="" /></td>
+      <td><?php echo $entry_cc_type; ?></td>
+      <td><select name="cc_type">
+          <?php foreach ($cardTypes as $card) { ?>
+          <option value="<?php echo $card['value']; ?>"><?php echo $card['text']; ?></option>
+          <?php } ?>
+        </select>
     </tr>
     <tr>
       <td><?php echo $entry_cc_number; ?></td>

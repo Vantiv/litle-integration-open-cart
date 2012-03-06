@@ -260,10 +260,8 @@ class XMLFields
 
 	public static function cardType($hash_in)
 	{
-		echo "in cardType";
 		if (isset($hash_in))
 		{
-			echo "hash is set";
 			var_dump($hash_in);
 			$hash_out= 	array(
 						"type"=>XMLFields::returnArrayValue($hash_in, "type"),
@@ -272,7 +270,6 @@ class XMLFields
 						"expDate"=>XMLFields::returnArrayValue($hash_in, "expDate"),
 						"cardValidationNum"=>XMLFields::returnArrayValue($hash_in, "cardValidationNum")
 			);
-			echo "returning";
 			return $hash_out;
 		}
 	}

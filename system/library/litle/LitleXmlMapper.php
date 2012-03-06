@@ -34,9 +34,7 @@ class LitleXmlMapper
 	{
 		#echo $request;
 	    $response = Communication::httpRequest($request);
-		#echo $response;
 		$respOb = XMLParser::domParser($response);
-		#var_dump($respOb);
 		return $respOb;
 	}
 

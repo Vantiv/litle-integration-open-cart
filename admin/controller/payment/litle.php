@@ -239,21 +239,18 @@ class ControllerPaymentLitle extends Controller {
 	public function getHashInWithLitleTxnId($textToLookFor)
 	{
 		return array(
-				 					'litleTxnId'=>$this->findLitleTxnId($textToLookFor)
+				 	'litleTxnId'=>$this->findLitleTxnId($textToLookFor)
 		);
 	}
 	
 	public function makeTheTransaction($typeOfTransaction)
 	{
-		echo "in make the transaction <br>";
 		restore_error_handler();
 		$order_id = $this->request->get['order_id'];
-		echo "order id found: " . $order_id . " <br>";
 		
 		$this->load->model('sale/order');
 		$total_order_histories = $this->model_sale_order->getTotalOrderHistories($order_id);
 		$latest_order_history = $this->model_sale_order->getOrderHistories($order_id, 0, $total_order_histories);
-		echo "model loaded; total_order_histories: " . $total_order_histories . " <br>";
 		
 		//********************************************************	
 		//TODO: add support for partial capture and partial refund
@@ -268,7 +265,6 @@ class ControllerPaymentLitle extends Controller {
 		
 		if($typeOfTransaction == "Refund" || $typeOfTransaction == "PartialRefund")
 		{
-			echo "in refund <br>";
 			//TODO: ADD SUPPORT!!
 			// need to add to the $hash_in the amount and other required/optional fields
 			if($typeOfTransaction == "PartialRefund")
@@ -287,7 +283,6 @@ class ControllerPaymentLitle extends Controller {
 		}
 		else if($typeOfTransaction == "Capture" || $typeOfTransaction == "PartialCapture")
 		{
-			echo "in capture <br>";
 			//TODO: ADD SUPPORT!!
 			// need to add to the $hash_in the amount and other required/optional fields
 			if($typeOfTransaction == "PartialCapture")
@@ -309,7 +304,6 @@ class ControllerPaymentLitle extends Controller {
 		}
 		else if($typeOfTransaction == "ReAuthorize")
 		{
-			echo "in reauth <br>";
 			$order_status_id = 1;
 			$litleTextToLookFor = "LitleCapturableTxn";
 			$litleTxtToInsertInComment = "LitleCapturableTxn";
@@ -318,7 +312,6 @@ class ControllerPaymentLitle extends Controller {
 		}
 		else if($typeOfTransaction == "AuthReversal" || $typeOfTransaction == "PartialAuthReversal")
 		{
-			echo "in AuthReversal <br>";
 			//TODO: ADD SUPPORT!!
 			// need to add to the $hash_in the amount and other required/optional fields
 			if($typeOfTransaction == "PartialAuthReversal")
@@ -334,8 +327,6 @@ class ControllerPaymentLitle extends Controller {
 			$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
 			$litleResponse = $litleRequest->authReversalRequest($hash_in);
 		}
-		echo "out of whatever type of transaction we were doing... <br>";
-		
 		
 		if( isset($litleResponse))
 		{
@@ -362,75 +353,15 @@ class ControllerPaymentLitle extends Controller {
 	
 	
 	public function capture() {
-// 		echo "in capture!";
-// 		echo $this->request->get['order_id'];
-
-// 		$order_id = $this->request->get['order_id'];
-
-// 		$this->load->model('sale/order');
-// 		$total_order_histories = $this->model_sale_order->getTotalOrderHistories($order_id);
-// 		$latest_order_history = $this->model_sale_order->getOrderHistories($order_id, $total_order_histories-1, 1);
-
-// 		echo "total order histories: " . $total_order_histories;
-// 		echo "<br>";
-		
-// 		echo "<br><br>1: " . $latest_order_history;
-// 		echo "<br><br>2: " . $latest_order_history[0];
-// 		echo "<br><br>3: " . $latest_order_history[0]['comment'];
-
-// 		echo "<br><br><br><br>";
-// 		if( $latest_order_history )
-// 			echo "latest order history comment: " . $latest_order_history[0]['comment'];
-
-// 		preg_match("/.*Transaction ID: (\d+).*/", $latest_order_history[0]['comment'], $litleTxnID);
-// 		//preg_match("/*Transaction ID: (\d+)*/", $latest_order_history[0]['comment'], $litleTxnID);
-// 		echo "<br><br>4: " . $litleTxnID[0];
-// 		echo '<br><br>litle txn ID = ' . $litleTxnID[1];
 		$this->makeTheTransaction("Capture");
 	}
 
 	public function refund() {
-// 		restore_error_handler();
-// 		$order_id = $this->request->get['order_id'];
-		
-//  		$this->load->model('sale/order');
-//  		$total_order_histories = $this->model_sale_order->getTotalOrderHistories($order_id);
-//  		$latest_order_history = $this->model_sale_order->getOrderHistories($order_id, 0, $total_order_histories);
-		
- 		
-//  		$hash_in = array(
-//  					'litleTxnId'=>$this->findLitleTxnId("LitleRefundableTxn")
-//  		);
-		
-// 		$litleRequest = new LitleOnlineRequest();
-// 		$creditResponse = $litleRequest->creditRequest($hash_in);
-		
-// 		if( isset($creditResponse))
-// 		{
-// 			$order_status_id = 11;
-// 			if(XMLParser::getNode($creditResponse,'response') != "000")
-// 			{
-// 				$order_status_id = 100;
-// 				if( $latest_order_history ){
-// 					$order_status_id = $latest_order_history[0]['order_status_id'];
-// 				}
-// 			}
-// 			$comment = XMLParser::getNode($creditResponse,'message') . " \n Transaction ID: " . XMLParser::getNode($creditResponse,'litleTxnId');
-// 			$data = array(
-// 							'order_status_id'=>$order_status_id,
-// 							'comment'=>$comment
-// 			);
-			
-// 			$this->model_sale_order->addOrderHistory($order_id, $data);
-// 		}	
-		
-// 		set_error_handler('error_handler');
-//  		$this->redirect($this->url->link('sale/order', 'token=' . $this->session->data['token'] . $url, 'SSL'));
 		$this->makeTheTransaction("Refund");
 	}
 
 	public function reauthorize() {
-		echo "in reauthorize!";
+		$this->makeTheTransaction("ReAuthorize");
 	}
 }
 
