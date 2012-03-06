@@ -50,26 +50,23 @@ class ControllerPaymentLitle extends Controller {
 		$this->render();		
 	}
 	
-	public function getAddressInfo($addressType)
+	public function getAddressInfo($order_info, $addressType)
 	{
-		$this->load->model('checkout/order');
-		$order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
-
 		$retArray = array();
- 		$retArray["firstName"] = XMLFields::returnArrayValue($order_info, ($addressType + "_firstname") );
- 		//$retArray["middleInitial"]= XMLFields::returnArrayValue($hash_in, ($addressType + "_lastname") );
- 		$retArray["lastName"] = XMLFields::returnArrayValue($order_info, ($addressType + "_lastname") );
-		//$retArray["name"] = XMLFields::returnArrayValue($order_info, ($addressType + "_firstname") );
- 		$retArray["companyName"] = XMLFields::returnArrayValue($order_info, ($addressType + "_company") );
- 		$retArray["addressLine1"] = XMLFields::returnArrayValue($order_info, ($addressType + "_address_1") );
- 		$retArray["addressLine2"] = XMLFields::returnArrayValue($order_info, ($addressType + "_address_2") );
- 		$retArray["city"] = XMLFields::returnArrayValue($order_info, ($addressType + "_city") );
- 		$retArray["state"] = XMLFields::returnArrayValue($order_info, ($addressType + "_firstname") );
- 		$retArray["zip"] = XMLFields::returnArrayValue($order_info, ($addressType + "_postcode") );
- 		$retArray["country"] = XMLFields::returnArrayValue($order_info, ($addressType + "_country") );
+		$retArray["firstName"] = XMLFields::returnArrayValue($order_info, ($addressType . "_firstname") );
+ 		//$retArray["middleInitial"]= XMLFields::returnArrayValue($hash_in, ($addressType . "_lastname") );
+ 		$retArray["lastName"] = XMLFields::returnArrayValue($order_info, ($addressType . "_lastname") );
+		//$retArray["name"] = XMLFields::returnArrayValue($order_info, ($addressType . "_firstname") );
+ 		$retArray["companyName"] = XMLFields::returnArrayValue($order_info, ($addressType . "_company") );
+ 		$retArray["addressLine1"] = XMLFields::returnArrayValue($order_info, ($addressType . "_address_1") );
+ 		$retArray["addressLine2"] = XMLFields::returnArrayValue($order_info, ($addressType . "_address_2") );
+ 		$retArray["city"] = XMLFields::returnArrayValue($order_info, ($addressType . "_city") );
+ 		$retArray["state"] = XMLFields::returnArrayValue($order_info, ($addressType . "_firstname") );
+ 		$retArray["zip"] = XMLFields::returnArrayValue($order_info, ($addressType . "_postcode") );
+ 		//$retArray["country"] = XMLFields::returnArrayValue($order_info, ($addressType . "_country") );
+ 		$retArray["country"] = XMLFields::returnArrayValue($order_info, ($addressType . "_iso_code_2") );
  		$retArray["email"] = XMLFields::returnArrayValue($order_info, "email" );
  		$retArray["phone"] = XMLFields::returnArrayValue($order_info, "telephone" );
- 		
  		return $retArray;
 	}
 	
@@ -88,51 +85,28 @@ class ControllerPaymentLitle extends Controller {
  		return $retArray;
 	}
 	
+	public function getAmountInCorrectFormat($amount) {
+		$retVal = str_replace(",", '', $amount);
+		$posOfDot = strpos($retVal, ".");
+		if($posOfDot != FALSE){
+			$retVal = substr($retVal, 0, $posOfDot + 3);
+			$retVal = str_replace(".", '', $retVal);
+		}
+		return $retVal;
+	}
+	
 	public function send() {
  		$this->load->model('checkout/order');
  		$order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
-		
-//         $data = array();
-
-// 		$data['x_login'] = $this->config->get('authorizenet_aim_login');
-// 		$data['x_tran_key'] = $this->config->get('authorizenet_aim_key');
-// 		$data['x_version'] = '3.1';
-// 		$data['x_delim_data'] = 'true';
-// 		$data['x_delim_char'] = ',';
-// 		$data['x_encap_char'] = '"';
-// 		$data['x_relay_response'] = 'false';
-// 		$data['x_first_name'] = html_entity_decode($order_info['payment_firstname'], ENT_QUOTES, 'UTF-8');
-// 		$data['x_last_name'] = html_entity_decode($order_info['payment_lastname'], ENT_QUOTES, 'UTF-8');
-// 		$data['x_company'] = html_entity_decode($order_info['payment_company'], ENT_QUOTES, 'UTF-8');
-// 		$data['x_address'] = html_entity_decode($order_info['payment_address_1'], ENT_QUOTES, 'UTF-8');
-// 		$data['x_city'] = html_entity_decode($order_info['payment_city'], ENT_QUOTES, 'UTF-8');
-// 		$data['x_state'] = html_entity_decode($order_info['payment_zone'], ENT_QUOTES, 'UTF-8');
-// 		$data['x_zip'] = html_entity_decode($order_info['payment_postcode'], ENT_QUOTES, 'UTF-8');
-// 		$data['x_country'] = html_entity_decode($order_info['payment_country'], ENT_QUOTES, 'UTF-8');
-// 		$data['x_phone'] = $order_info['telephone'];
-// 		$data['x_customer_ip'] = $this->request->server['REMOTE_ADDR'];
-// 		$data['x_email'] = $order_info['email'];
-// 		$data['x_description'] = html_entity_decode($this->config->get('config_name'), ENT_QUOTES, 'UTF-8');
-// 		$data['x_amount'] = $this->currency->format($order_info['total'], $order_info['currency_code'], 1.00000, false);
-// 		$data['x_currency_code'] = $this->currency->getCode();
-// 		$data['x_method'] = 'CC';
-// 		$data['x_type'] = ($this->config->get('authorizenet_aim_method') == 'capture') ? 'AUTH_CAPTURE' : 'AUTH_ONLY';
-// 		$data['x_card_num'] = str_replace(' ', '', $this->request->post['cc_number']);
-// 		$data['x_exp_date'] = $this->request->post['cc_expire_date_month'] . $this->request->post['cc_expire_date_year'];
-// 		$data['x_card_code'] = $this->request->post['cc_cvv2'];
-// 		$data['x_invoice_num'] = $this->session->data['order_id'];
-	
-// 		if ($this->config->get('authorizenet_aim_mode') == 'test') {
-// 			$data['x_test_request'] = 'true';
-// 		}	
-		
+				
+ 		$orderAmountToInsert = $this->getAmountInCorrectFormat($order_info['total']);
  		$hash_in = array(
  					'orderId'=> $order_info['order_id'],
- 					'amount'=> 5000,//$order_info['total'],
+ 					'amount'=> $orderAmountToInsert,
  					'orderSource'=> "ecommerce",
  					//'customerInfo'=> $order_info['payment_firstname'],
- 					'billToAddress'=> $this->getAddressInfo("payment"),
- 					'shipToAddress'=> $this->getAddressInfo("shipping"),
+ 					'billToAddress'=> $this->getAddressInfo($order_info, "payment"),
+ 					'shipToAddress'=> $this->getAddressInfo($order_info, "shipping"),
  					'card'=> $this->getCreditCardInfo(),
  					//'paypal'=> $order_info['payment_firstname'],
  					//'token'=> $order_info['payment_firstname'],
@@ -153,7 +127,6 @@ class ControllerPaymentLitle extends Controller {
  		);
  		$litleResponseMessagePrefix = "";
  		$litleRequest = new LitleOnlineRequest();
-		
  		$doingAuth = $this->config->get('litle_transaction') == "auth";
 		if($doingAuth) {
 			//auth txn
@@ -170,8 +143,7 @@ class ControllerPaymentLitle extends Controller {
 		$litleValidationMessage = XMLParser::getNode($response, "message");
 		$litleTxnId = XMLParser::getNode($response, "litleTxnId");
 		
-		$message = $litleResponseMessagePrefix . $litleValidationMessage . " \n Transaction ID: " . $litleTxnId . " \n";
-		
+		$json = array();
 		if($code == "000") { //Success
 			if($doingAuth) {
 				$orderStatusId = 1; //Pending
@@ -179,9 +151,15 @@ class ControllerPaymentLitle extends Controller {
 			else {
 				$orderStatusId = 5; //Processing
 			}
+			$message = $litleResponseMessagePrefix . $litleValidationMessage . " \n Transaction ID: " . $litleTxnId . " \n";
+			$json['success'] = $this->url->link('checkout/success', '', 'SSL');
 		}
 		else {
+			$xpath = new DOMXPath($response);
+			$query = 'string(/litleOnlineResponse/@message)';
+			$message = $xpath->evaluate($query);
 			$orderStatusId = 8; //Denied
+			$json['error'] = "Either your credit card was declined or there was an error. Please try again.";
 		}
 		
 		$this->model_checkout_order->confirm(
@@ -191,8 +169,6 @@ class ControllerPaymentLitle extends Controller {
 			true
 		);
 		
-		$json = array();
-		$json['success'] = $this->url->link('checkout/success', '', 'SSL');
 		$this->response->setOutput(json_encode($json));
 	}
 }
