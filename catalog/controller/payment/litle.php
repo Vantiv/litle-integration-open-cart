@@ -126,7 +126,6 @@ class ControllerPaymentLitle extends Controller {
 // 			$data['x_test_request'] = 'true';
 // 		}	
 		
-		$json = array();
  		$hash_in = array(
  					'orderId'=> $order_info['order_id'],
  					'amount'=> 5000,//$order_info['total'],
@@ -134,7 +133,7 @@ class ControllerPaymentLitle extends Controller {
  					//'customerInfo'=> $order_info['payment_firstname'],
  					'billToAddress'=> $this->getAddressInfo("payment"),
  					'shipToAddress'=> $this->getAddressInfo("shipping"),
- 					'card'=> $this->getCreditCardInfo()//,
+ 					'card'=> $this->getCreditCardInfo(),
  					//'paypal'=> $order_info['payment_firstname'],
  					//'token'=> $order_info['payment_firstname'],
  					//'paypage'=> $order_info['payment_firstname'],
@@ -152,10 +151,10 @@ class ControllerPaymentLitle extends Controller {
  					//'merchantData'=>(XMLFields::filteringType($hash_in['merchantData'])),
  					//'recyclingRequest'=>(XMLFields::recyclingRequestType($hash_in['recyclingRequest']))
  		);
- 		
  		$litleResponseMessagePrefix = "";
  		$litleRequest = new LitleOnlineRequest();
-		$doingAuth = $this->config->get('litle_transaction') == "auth";
+		
+ 		$doingAuth = $this->config->get('litle_transaction') == "auth";
 		if($doingAuth) {
 			//auth txn
 			$response = $litleRequest->authorizationRequest($hash_in);
@@ -191,9 +190,9 @@ class ControllerPaymentLitle extends Controller {
 			$message,
 			true
 		);
-				
-		$json['success'] = $this->url->link('checkout/success', '', 'SSL');
 		
+		$json = array();
+		$json['success'] = $this->url->link('checkout/success', '', 'SSL');
 		$this->response->setOutput(json_encode($json));
 	}
 }

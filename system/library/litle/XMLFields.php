@@ -181,7 +181,6 @@ class XMLFields
 						"cardholderId"=>(Checker::requiredField(XMLFields::returnArrayValue($hash_in, "cardholderId")))
 			);
 			return $hash_out;
-			echo 'here';
 		}
 	}
 
@@ -262,7 +261,6 @@ class XMLFields
 	{
 		if (isset($hash_in))
 		{
-			var_dump($hash_in);
 			$hash_out= 	array(
 						"type"=>XMLFields::returnArrayValue($hash_in, "type"),
 						"track"=>XMLFields::returnArrayValue($hash_in, "track"),
