@@ -332,13 +332,13 @@ class ControllerSaleOrder extends Controller {
 						$result['order_status_id'] == 7 || $result['order_status_id'] == 5 || 
 						$result['order_status_id'] == 15){
 					$litleActionText = $this->language->get('text_refund');
-					$litleActionHref = "payment/litle/refund";;
+					$litleActionHref = "payment/litle/refund";
 				}
-				else if($result['order_status_id'] == 14){
+				else if($result['order_status_id'] == 14 || $result['order_status_id'] == 10){
 					$litleActionText = $this->language->get('text_reauth');
 					$litleActionHref = "payment/litle/reauthorize";
 				}
-				echo "Litle Action is " . $litleActionText;
+				
 				
 				$litleAction[] = array(
 					'text' => $litleActionText,

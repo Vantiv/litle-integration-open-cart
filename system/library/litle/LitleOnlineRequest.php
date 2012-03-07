@@ -189,13 +189,7 @@ class LitleOnlineRequest
 		'processingInstructions'=>XMLFields::processingInstructions($hash_in['processingInstructions']),
 		'payPalOrderComplete'=>$hash_in['payPalOrderComplete'],
 		'payPalNotes' =>$hash_in['payPalNotes']);
-		echo "/$hash_out in captureRequest is: ";
-		var_dump($hash_out);
-		echo "<br>";
 		$captureResponse = LitleOnlineRequest::processRequest($hash_out,$hash_in,'capture');
-		echo "/$captureResponse is: ";
-		var_dump($captureResponse);
-		echo "<br>";
 		return $captureResponse;
 	}
 
@@ -320,6 +314,7 @@ class LitleOnlineRequest
 		$hash_config = LitleOnlineRequest::overideconfig($hash_in);
 		Checker::choice($choice1);
 		Checker::choice($choice2);
+		var_dump($hash_out);
 		$request = Obj2xml::toXml($hash_out,$hash_config, $type);
 		$litleOnlineResponse = $this->newXML->request($request);
 		return $litleOnlineResponse;

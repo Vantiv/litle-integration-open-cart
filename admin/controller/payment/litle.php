@@ -245,6 +245,8 @@ class ControllerPaymentLitle extends Controller {
 	
 	public function makeTheTransaction($typeOfTransaction)
 	{
+		$this->load->language('payment/litle');
+		
 		restore_error_handler();
 		$order_id = $this->request->get['order_id'];
 		
@@ -270,14 +272,14 @@ class ControllerPaymentLitle extends Controller {
 			if($typeOfTransaction == "PartialRefund")
 			{
 				$order_status_id = 5;
-				$litleTxtToInsertInComment = "LitlePartialRefundTxn";
+				$litleTxtToInsertInComment = $this->language->get('text_litle_partial_refund_txn');
 			}
 			else
 			{
 				$order_status_id = 11;
-				$litleTxtToInsertInComment = "LitleRefundTxn";
+				$litleTxtToInsertInComment = $this->language->get('text_litle_refund_txn');
 			}
-			$litleTextToLookFor = "LitleRefundableTxn";
+			$litleTextToLookFor = $this->language->get('text_litle_capture_txn');
 			$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
 			$litleResponse = $litleRequest->creditRequest($hash_in);
 		}
@@ -285,6 +287,7 @@ class ControllerPaymentLitle extends Controller {
 		{
 			//TODO: ADD SUPPORT!!
 			// need to add to the $hash_in the amount and other required/optional fields
+			echo "here!!";
 			if($typeOfTransaction == "PartialCapture")
 			{
 				$order_status_id = 2;
@@ -293,21 +296,21 @@ class ControllerPaymentLitle extends Controller {
 			{
 				$order_status_id = 5;
 			}
-			$litleTextToLookFor = "LitleCapturableTxn";
-			$litleTxtToInsertInComment = "LitleRefundableTxn";
+			$litleTextToLookFor = $this->language->get('text_litle_auth_txn');
+			$litleTxtToInsertInComment = $this->language->get('text_litle_capture_txn');
 			$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
-			var_dump($hash_in);
-			echo "<br>";
 			$litleResponse = $litleRequest->captureRequest($hash_in);
-			var_dump($litleResponse);
-			echo "<br>";
 		}
 		else if($typeOfTransaction == "ReAuthorize")
 		{
 			$order_status_id = 1;
-			$litleTextToLookFor = "LitleCapturableTxn";
-			$litleTxtToInsertInComment = "LitleCapturableTxn";
+			$litleTextToLookFor = $this->language->get('text_litle_auth_txn');
+			$litleTxtToInsertInComment = $this->language->get('text_litle_auth_txn');
 			$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
+			if($hash_in['litleTxnId'] == NULL){
+				$litleTextToLookFor = $this->language->get('text_litle_txn');
+				$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
+			}
 			$litleResponse = $litleRequest->authorizationRequest($hash_in);
 		}
 		else if($typeOfTransaction == "AuthReversal" || $typeOfTransaction == "PartialAuthReversal")
@@ -322,26 +325,29 @@ class ControllerPaymentLitle extends Controller {
 			{
 				$order_status_id = 15;
 			}
-			$litleTextToLookFor = "LitleCapturableTxn";
-			$litleTxtToInsertInComment = "LitleTxn";
+			$litleTextToLookFor = $this->language->get('text_litle_auth_txn');
+			$litleTxtToInsertInComment = $this->language->get('text_litle_txn');
 			$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
 			$litleResponse = $litleRequest->authReversalRequest($hash_in);
 		}
 		
+		echo $litleResponse->saveXML();
+		
 		if( isset($litleResponse))
 		{
-			echo "response code is: " . XMLParser::getNode($litleResponse,'response') . " <br>";
-			if(XMLParser::getNode($litleResponse,'response') != "000")
+			$litleResponseCode = XMLParser::getNode($litleResponse,'response');
+			if($litleResponseCode != "000")
 			{
 				$order_status_id = 1;
 				if( $latest_order_history ){
 					$order_status_id = $latest_order_history[0]['order_status_id'];
 				}
 			}
-			$comment = $litleTxtToInsertInComment . ": " . XMLParser::getNode($litleResponse,'message') . " \n Transaction ID: " . XMLParser::getNode($litleResponse,'litleTxnId');
+			$comment = $litleTxtToInsertInComment . ": " . XMLParser::getNode($litleResponse,'message') . " \n ". $this->language->get('text_litle_response_code') . " " . $litleResponseCode . "\n ". $this->language->get('text_litle_transaction_id'). " " . XMLParser::getNode($litleResponse,'litleTxnId');
+			
 			$data = array(
-									'order_status_id'=>$order_status_id,
-									'comment'=>$comment
+						'order_status_id'=>$order_status_id,
+						'comment'=>$comment
 			);
 				
 			$this->model_sale_order->addOrderHistory($order_id, $data);
@@ -356,13 +362,27 @@ class ControllerPaymentLitle extends Controller {
 		$this->makeTheTransaction("Capture");
 	}
 
+	public function partialCapture() {
+		$this->makeTheTransaction("PartialCapture");
+	}
+	
 	public function refund() {
 		$this->makeTheTransaction("Refund");
 	}
 
+	public function partialRefund() {
+		$this->makeTheTransaction("PartialRefund");
+	}
+	
 	public function reauthorize() {
 		$this->makeTheTransaction("ReAuthorize");
 	}
+	
+	public function authReversal() {
+		$this->makeTheTransaction("AuthReversal");
+	}
+	
+	
 }
 
 ?>

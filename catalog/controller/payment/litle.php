@@ -131,17 +131,19 @@ class ControllerPaymentLitle extends Controller {
 		if($doingAuth) {
 			//auth txn
 			$response = $litleRequest->authorizationRequest($hash_in);
-			$litleResponseMessagePrefix = "LitleCapturableTxn: ";
+			$litleResponseMessagePrefix = "LitleAuthTxn: ";
 		}
 		else {
 			//sale txn
 			$response = $litleRequest->saleRequest($hash_in);
-			$litleResponseMessagePrefix = "LitleRefundableTxn: ";
+			$litleResponseMessagePrefix = "LitleCaptureTxn: ";
 		}
 		
 		$code = XMLParser::getNode($response, "response");
 		$litleValidationMessage = XMLParser::getNode($response, "message");
 		$litleTxnId = XMLParser::getNode($response, "litleTxnId");
+		
+		$code = '101';
 		
 		$json = array();
 		if($code == "000") { //Success
@@ -151,15 +153,21 @@ class ControllerPaymentLitle extends Controller {
 			else {
 				$orderStatusId = 5; //Processing
 			}
-			$message = $litleResponseMessagePrefix . $litleValidationMessage . " \n Transaction ID: " . $litleTxnId . " \n";
+			$message = $litleResponseMessagePrefix . $litleValidationMessage . " \n Litle Response Code: " . $code . "\n  Litle Transaction ID: " . $litleTxnId . " \n";
 			$json['success'] = $this->url->link('checkout/success', '', 'SSL');
+		}
+		else if($code == "100" || $code == "101" || $code == "102" || $code == "110"){ //Need to try again
+			$orderStatusId = 10; //Failed
+			$litleResponseMessagePrefix = "LitleTxn: ";
+			$message = $litleResponseMessagePrefix . $litleValidationMessage . " \n Litle Response Code: " . $code . "\n  Litle Transaction ID: " . $litleTxnId . " \n";
+			$json['error'] = "Either your credit card was declined or there was an error. Please try again or contact us for further help.";
 		}
 		else {
 			$xpath = new DOMXPath($response);
 			$query = 'string(/litleOnlineResponse/@message)';
 			$message = $xpath->evaluate($query);
 			$orderStatusId = 8; //Denied
-			$json['error'] = "Either your credit card was declined or there was an error. Please try again.";
+			$json['error'] = "Either your credit card was declined or there was an error. Please try again or contact us for further help.";
 		}
 		
 		$this->model_checkout_order->confirm(

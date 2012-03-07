@@ -16,6 +16,19 @@ $_['text_payment_method']			 = 'Credit Card / Debit Card (Litle & Co.)';
 $_['text_capture']       			 = 'Capture';
 $_['text_refund']		        	 = 'Refund';
 $_['text_reauth']			         = 'Re-Authorize';
+$_['text_partial_capture']			 = 'Partial Capture';
+$_['text_auth_reversal']			 = 'Reverse Auth';
+$_['text_partial_refund']			 = 'Partial Refund';
+$_['text_litle_response_code']		 = 'Litle Response Code:';
+$_['text_litle_transaction_id']		 = 'Litle Transaction ID:';
+$_['text_litle_partial_refund_txn']  = 'LitlePartialRefundTxn';
+$_['text_litle_refund_txn']			 = 'LitleRefundTxn';
+$_['text_litle_refundable_txn']		 = 'LitleRefundableTxn';
+$_['text_litle_capturable_txn']		 = 'LitleCapturableTxn';
+$_['text_litle_txn']				 = 'LitleTxn';
+$_['text_litle_auth_txn']			 = 'LitleAuthTxn';
+$_['text_litle_capture_txn']		 = 'LitleCaptureTxn';
+
 
 // Entry
 $_['merchant_id']					 = 'Merchant ID:<br/><span class="help">This is the merchant ID provided to you when you signed up with Litle. Find out how to get your merchant ID <a href="http://www.litle.com/" alt="litle.com">here</a></span>';
