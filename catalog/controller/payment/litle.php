@@ -143,8 +143,6 @@ class ControllerPaymentLitle extends Controller {
 		$litleValidationMessage = XMLParser::getNode($response, "message");
 		$litleTxnId = XMLParser::getNode($response, "litleTxnId");
 		
-		$code = '101';
-		
 		$json = array();
 		if($code == "000") { //Success
 			if($doingAuth) {
