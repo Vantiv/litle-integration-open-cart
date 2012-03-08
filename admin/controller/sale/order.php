@@ -325,25 +325,75 @@ class ControllerSaleOrder extends Controller {
 			$litleAction = array();
 			if($result['payment_method'] == $litlePaymentMethod) {
 				if($result['order_status_id'] == 1){ // Pending
+					// Add Capture
 					$litleActionText = $this->language->get('text_capture');
 					$litleActionHref = "payment/litle/capture";
+					$litleAction[] = array(
+										'text' => $litleActionText,
+										'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
+					);
+					//TODO: Fix the URL to do a proper partial capture
+					// Add Partial Capture
+					$litleActionText = $this->language->get('text_partial_capture');
+					$litleActionHref = "payment/litle/partialCapture";
+					$litleAction[] = array(
+										'text' => $litleActionText,
+										'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
+					);
+					// Add Auth-Reversal
+					$litleActionText = $this->language->get('text_auth_reversal');
+					$litleActionHref = "payment/litle/authReversal";
+					$litleAction[] = array(
+										'text' => $litleActionText,
+										'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
+					);
 				}
 				else if($result['order_status_id'] == 2 || $result['order_status_id'] == 3 || 
 						$result['order_status_id'] == 7 || $result['order_status_id'] == 5 || 
 						$result['order_status_id'] == 15){
+					// Add Refund
 					$litleActionText = $this->language->get('text_refund');
 					$litleActionHref = "payment/litle/refund";
+					$litleAction[] = array(
+										'text' => $litleActionText,
+										'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
+					);
+					//TODO: Fix the URL to do a proper partial refund
+					// Add Partial Refund
+					$litleActionText = $this->language->get('text_partial_refund');
+					$litleActionHref = "payment/litle/partialRefund";
+					$litleAction[] = array(
+										'text' => $litleActionText,
+										'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
+					);
+					
+					if( $result['order_status_id'] == 2 ){
+						// Add Capture
+						$litleActionText = $this->language->get('text_capture');
+						$litleActionHref = "payment/litle/capture";
+						$litleAction[] = array(
+																'text' => $litleActionText,
+																'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
+						);
+						//TODO: Fix the URL to do a proper partial capture
+						// Add Partial Capture
+						$litleActionText = $this->language->get('text_partial_capture');
+						$litleActionHref = "payment/litle/partialCapture";
+						$litleAction[] = array(
+																'text' => $litleActionText,
+																'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
+						);
+					}
 				}
 				else if($result['order_status_id'] == 14 || $result['order_status_id'] == 10){
+					// Add Re-Authorize
 					$litleActionText = $this->language->get('text_reauth');
 					$litleActionHref = "payment/litle/reauthorize";
+					$litleAction[] = array(
+															'text' => $litleActionText,
+															'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
+					);
 				}
-				
-				
-				$litleAction[] = array(
-					'text' => $litleActionText,
-					'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
-				);
 			}
 			
 			/*
@@ -363,7 +413,7 @@ class ControllerSaleOrder extends Controller {
 				'date_modified' => date($this->language->get('date_format_short'), strtotime($result['date_modified'])),
 				'selected'      => isset($this->request->post['selected']) && in_array($result['order_id'], $this->request->post['selected']),
 				'action'        => $action,
-				'litleAction'	=> $litleAction
+				'litleAction'	=> $litleAction,
 			);
 		}		
 

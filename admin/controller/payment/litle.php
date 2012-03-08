@@ -243,6 +243,16 @@ class ControllerPaymentLitle extends Controller {
 		);
 	}
 	
+	public function getAmountInCorrectFormat($amount) {
+		$retVal = str_replace(",", '', $amount);
+		$posOfDot = strpos($retVal, ".");
+		if($posOfDot != FALSE){
+			$retVal = substr($retVal, 0, $posOfDot + 3);
+			$retVal = str_replace(".", '', $retVal);
+		}
+		return $retVal;
+	}
+	
 	public function makeTheTransaction($typeOfTransaction)
 	{
 		$this->load->language('payment/litle');
@@ -254,10 +264,6 @@ class ControllerPaymentLitle extends Controller {
 		$total_order_histories = $this->model_sale_order->getTotalOrderHistories($order_id);
 		$latest_order_history = $this->model_sale_order->getOrderHistories($order_id, 0, $total_order_histories);
 		
-		//********************************************************	
-		//TODO: add support for partial capture and partial refund
-		//********************************************************
-		
 		$litleTextToLookFor = "";
 		$litleTextToInsertInComment = "";
 		$order_status_id = 1;
@@ -265,45 +271,51 @@ class ControllerPaymentLitle extends Controller {
 		$litleRequest = new LitleOnlineRequest();
 		$litleResponse = "";
 		
+		// Refunds and Partial Refunds
 		if($typeOfTransaction == "Refund" || $typeOfTransaction == "PartialRefund")
 		{
-			//TODO: ADD SUPPORT!!
-			// need to add to the $hash_in the amount and other required/optional fields
 			if($typeOfTransaction == "PartialRefund")
 			{
-				$order_status_id = 5;
+				$order_status_id = 5;	//Complete
 				$litleTxtToInsertInComment = $this->language->get('text_litle_partial_refund_txn');
 			}
 			else
 			{
-				$order_status_id = 11;
+				$order_status_id = 11;	//Refunded
 				$litleTxtToInsertInComment = $this->language->get('text_litle_refund_txn');
 			}
 			$litleTextToLookFor = $this->language->get('text_litle_capture_txn');
 			$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
+			if($hash_in['litleTxnId'] == NULL){
+				$litleTextToLookFor = $this->language->get('text_litle_partial_capture_txn');
+				$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
+			}
+			$hash_in['amount'] = $this->getAmountInCorrectFormat($this->request->get['amount']);
 			$litleResponse = $litleRequest->creditRequest($hash_in);
 		}
+		// Capture and Partial Capture
 		else if($typeOfTransaction == "Capture" || $typeOfTransaction == "PartialCapture")
 		{
-			//TODO: ADD SUPPORT!!
-			// need to add to the $hash_in the amount and other required/optional fields
-			echo "here!!";
+			$litleTxtToInsertInComment = "";
 			if($typeOfTransaction == "PartialCapture")
 			{
-				$order_status_id = 2;
+				$order_status_id = 2;	//Processing
+				$litleTxtToInsertInComment = $this->language->get('text_litle_partial_capture_txn');
 			}
 			else
 			{
-				$order_status_id = 5;
+				$order_status_id = 5;	//Complete
+				$litleTxtToInsertInComment = $this->language->get('text_litle_capture_txn');
 			}
 			$litleTextToLookFor = $this->language->get('text_litle_auth_txn');
-			$litleTxtToInsertInComment = $this->language->get('text_litle_capture_txn');
 			$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
+			$hash_in['amount'] = $this->getAmountInCorrectFormat($this->request->get['amount']);
 			$litleResponse = $litleRequest->captureRequest($hash_in);
 		}
+		// Re-Authorize
 		else if($typeOfTransaction == "ReAuthorize")
 		{
-			$order_status_id = 1;
+			$order_status_id = 1;	// Pending
 			$litleTextToLookFor = $this->language->get('text_litle_auth_txn');
 			$litleTxtToInsertInComment = $this->language->get('text_litle_auth_txn');
 			$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
@@ -311,23 +323,27 @@ class ControllerPaymentLitle extends Controller {
 				$litleTextToLookFor = $this->language->get('text_litle_txn');
 				$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
 			}
+			if($hash_in['litleTxnId'] == NULL){
+				$litleTextToLookFor = $this->language->get('text_litle_auth_reversal_txn');
+				$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
+			}
 			$litleResponse = $litleRequest->authorizationRequest($hash_in);
 		}
+		// Auth-Reversal and Partial Auth-Reversal
 		else if($typeOfTransaction == "AuthReversal" || $typeOfTransaction == "PartialAuthReversal")
 		{
-			//TODO: ADD SUPPORT!!
-			// need to add to the $hash_in the amount and other required/optional fields
-			if($typeOfTransaction == "PartialAuthReversal")
-			{
-				$order_status_id = 7;
-			}
-			else
-			{
-				$order_status_id = 15;
-			}
 			$litleTextToLookFor = $this->language->get('text_litle_auth_txn');
-			$litleTxtToInsertInComment = $this->language->get('text_litle_txn');
+			$litleTxtToInsertInComment = "";
+			if($typeOfTransaction == "AuthReversal"){
+				$order_status_id = 12;	//Reversed
+				$litleTxtToInsertInComment = $this->language->get('text_litle_auth_reversal_txn');
+			}
+			else{
+				$order_status_id = 5;	//Complete
+				$litleTxtToInsertInComment = $this->language->get('text_litle_partial_auth_reversal_txn');
+			}
 			$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
+			$hash_in['amount'] = $this->getAmountInCorrectFormat($this->request->get['amount']);
 			$litleResponse = $litleRequest->authReversalRequest($hash_in);
 		}
 		

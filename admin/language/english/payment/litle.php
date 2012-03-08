@@ -23,11 +23,12 @@ $_['text_litle_response_code']		 = 'Litle Response Code:';
 $_['text_litle_transaction_id']		 = 'Litle Transaction ID:';
 $_['text_litle_partial_refund_txn']  = 'LitlePartialRefundTxn';
 $_['text_litle_refund_txn']			 = 'LitleRefundTxn';
-$_['text_litle_refundable_txn']		 = 'LitleRefundableTxn';
-$_['text_litle_capturable_txn']		 = 'LitleCapturableTxn';
 $_['text_litle_txn']				 = 'LitleTxn';
 $_['text_litle_auth_txn']			 = 'LitleAuthTxn';
+$_['text_litle_partial_capture_txn'] = 'LitlePartialCaptureTxn';
 $_['text_litle_capture_txn']		 = 'LitleCaptureTxn';
+$_['text_litle_auth_reversal_txn']	 = 'LitleAuthReversalTxn';
+$_['text_litle_partial_auth_reversal_txn']	 = 'LitlePartialAuthReversalTxn';
 
 
 // Entry
