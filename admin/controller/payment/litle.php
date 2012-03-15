@@ -347,8 +347,6 @@ class ControllerPaymentLitle extends Controller {
 			$litleResponse = $litleRequest->authReversalRequest($hash_in);
 		}
 		
-		echo $litleResponse->saveXML();
-		
 		if( isset($litleResponse))
 		{
 			$litleResponseCode = XMLParser::getNode($litleResponse,'response');
