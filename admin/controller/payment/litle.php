@@ -151,10 +151,6 @@ class ControllerPaymentLitle extends Controller {
 			$this->data['litle_total'] = $this->config->get('litle_total');
 		}
 
-		$this->data['litle_timeout'] = 65;
-		$this->data['litle_proxy_addr'] = "smoothproxy";
-		$this->data['litle_proxy_port'] = "8080";
-
 		$this->load->model('localisation/order_status');
 
 		$this->data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
@@ -216,12 +212,15 @@ class ControllerPaymentLitle extends Controller {
 
 	// ##############################################################################
 	// ################ Call handlers from Orders Page -- admin side ################
-	public function findLitleTxnId($txnType)
+	public function findLitleTxnId($txnType=NULL)
 	{
 		$order_id = $this->request->get['order_id'];
 		$this->load->model('sale/order');
 		$total_order_histories = $this->model_sale_order->getTotalOrderHistories($order_id);
 		$all_order_history = $this->model_sale_order->getOrderHistories($order_id, 0, $total_order_histories);
+		
+		if( $txnType == NULL )
+			$txnType = "Litle";
 		
 		$i = 0;
 		for($i = ($total_order_histories -1) ; $i >= 0; $i--)
@@ -271,45 +270,23 @@ class ControllerPaymentLitle extends Controller {
 		$litleRequest = new LitleOnlineRequest();
 		$litleResponse = "";
 		
-		// Refunds and Partial Refunds
-		if($typeOfTransaction == "Refund" || $typeOfTransaction == "PartialRefund")
+		// Refunds
+		if($typeOfTransaction == "Refund")
 		{
-			if($typeOfTransaction == "PartialRefund")
-			{
-				$order_status_id = 5;	//Complete
-				$litleTxtToInsertInComment = $this->language->get('text_litle_partial_refund_txn');
-			}
-			else
-			{
-				$order_status_id = 11;	//Refunded
-				$litleTxtToInsertInComment = $this->language->get('text_litle_refund_txn');
-			}
+			$order_status_id = 11;	//Refunded
+			$litleTxtToInsertInComment = $this->language->get('text_litle_refund_txn');
 			$litleTextToLookFor = $this->language->get('text_litle_capture_txn');
 			$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
-			if($hash_in['litleTxnId'] == NULL){
-				$litleTextToLookFor = $this->language->get('text_litle_partial_capture_txn');
-				$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
-			}
-			$hash_in['amount'] = $this->getAmountInCorrectFormat($this->request->get['amount']);
 			$litleResponse = $litleRequest->creditRequest($hash_in);
 		}
-		// Capture and Partial Capture
-		else if($typeOfTransaction == "Capture" || $typeOfTransaction == "PartialCapture")
+		// Capture
+		else if($typeOfTransaction == "Capture")
 		{
 			$litleTxtToInsertInComment = "";
-			if($typeOfTransaction == "PartialCapture")
-			{
-				$order_status_id = 2;	//Processing
-				$litleTxtToInsertInComment = $this->language->get('text_litle_partial_capture_txn');
-			}
-			else
-			{
-				$order_status_id = 5;	//Complete
-				$litleTxtToInsertInComment = $this->language->get('text_litle_capture_txn');
-			}
+			$order_status_id = 5;	//Complete
+			$litleTxtToInsertInComment = $this->language->get('text_litle_capture_txn');
 			$litleTextToLookFor = $this->language->get('text_litle_auth_txn');
 			$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
-			$hash_in['amount'] = $this->getAmountInCorrectFormat($this->request->get['amount']);
 			$litleResponse = $litleRequest->captureRequest($hash_in);
 		}
 		// Re-Authorize
@@ -329,22 +306,21 @@ class ControllerPaymentLitle extends Controller {
 			}
 			$litleResponse = $litleRequest->authorizationRequest($hash_in);
 		}
-		// Auth-Reversal and Partial Auth-Reversal
-		else if($typeOfTransaction == "AuthReversal" || $typeOfTransaction == "PartialAuthReversal")
+		// Auth-Reversal
+		else if($typeOfTransaction == "AuthReversal")
 		{
 			$litleTextToLookFor = $this->language->get('text_litle_auth_txn');
-			$litleTxtToInsertInComment = "";
-			if($typeOfTransaction == "AuthReversal"){
-				$order_status_id = 12;	//Reversed
-				$litleTxtToInsertInComment = $this->language->get('text_litle_auth_reversal_txn');
-			}
-			else{
-				$order_status_id = 5;	//Complete
-				$litleTxtToInsertInComment = $this->language->get('text_litle_partial_auth_reversal_txn');
-			}
+			$order_status_id = 12;	//Reversed
+			$litleTxtToInsertInComment = $this->language->get('text_litle_auth_reversal_txn');
 			$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
-			$hash_in['amount'] = $this->getAmountInCorrectFormat($this->request->get['amount']);
 			$litleResponse = $litleRequest->authReversalRequest($hash_in);
+		}
+		else if($typeOfTransaction == "VoidTxn")
+		{
+			$order_status_id = (isset($latest_order_history))? $latest_order_history[(count($latest_order_history)-2)]['order_status_id'] : 16;	//last txn
+			$litleTxtToInsertInComment = $this->language->get('text_litle_void_txn');
+			$hash_in = $this->getHashInWithLitleTxnId();
+			$litleResponse = $litleRequest->voidRequest($hash_in);
 		}
 		
 		if( isset($litleResponse))
@@ -354,9 +330,11 @@ class ControllerPaymentLitle extends Controller {
 			{
 				$order_status_id = 1;
 				if( $latest_order_history ){
-					$order_status_id = $latest_order_history[0]['order_status_id'];
+					$order_status_id = $latest_order_history[(count($latest_order_history)-1)]['order_status_id'];
 				}
+				$this->error['warning'] = "There was an error processing requested transaction. Please try again or contact Litle.";
 			}
+			
 			$comment = $litleTxtToInsertInComment . ": " . XMLParser::getNode($litleResponse,'message') . " \n ". $this->language->get('text_litle_response_code') . " " . $litleResponseCode . "\n ". $this->language->get('text_litle_transaction_id'). " " . XMLParser::getNode($litleResponse,'litleTxnId');
 			
 			$data = array(
@@ -365,6 +343,13 @@ class ControllerPaymentLitle extends Controller {
 			);
 				
 			$this->model_sale_order->addOrderHistory($order_id, $data);
+		}
+		else {
+			$this->error['warning'] = "There was an error processing requested transaction. Please try again or contact Litle.";
+		}
+		
+		if (isset($this->error['warning'])) {
+			$this->session->data['litle_warning'] = $this->error['warning'];
 		}
 		
 		set_error_handler('error_handler');
@@ -376,18 +361,10 @@ class ControllerPaymentLitle extends Controller {
 		$this->makeTheTransaction("Capture");
 	}
 
-	public function partialCapture() {
-		$this->makeTheTransaction("PartialCapture");
-	}
-	
 	public function refund() {
 		$this->makeTheTransaction("Refund");
 	}
 
-	public function partialRefund() {
-		$this->makeTheTransaction("PartialRefund");
-	}
-	
 	public function reauthorize() {
 		$this->makeTheTransaction("ReAuthorize");
 	}
@@ -396,7 +373,9 @@ class ControllerPaymentLitle extends Controller {
 		$this->makeTheTransaction("AuthReversal");
 	}
 	
-	
+	public function voidTxn() {
+		$this->makeTheTransaction("VoidTxn");
+	}
 }
 
 ?>

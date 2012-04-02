@@ -158,14 +158,14 @@ class ControllerPaymentLitle extends Controller {
 			$orderStatusId = 10; //Failed
 			$litleResponseMessagePrefix = "LitleTxn: ";
 			$message = $litleResponseMessagePrefix . $litleValidationMessage . " \n Litle Response Code: " . $code . "\n  Litle Transaction ID: " . $litleTxnId . " \n";
-			$json['error'] = "Either your credit card was declined or there was an error. Please try again or contact us for further help.";
+			$json['error'] = "Either your credit card was declined or there was an error. Try again or contact us for further help.";
 		}
 		else {
 			$xpath = new DOMXPath($response);
 			$query = 'string(/litleOnlineResponse/@message)';
 			$message = $xpath->evaluate($query);
 			$orderStatusId = 8; //Denied
-			$json['error'] = "Either your credit card was declined or there was an error. Please try again or contact us for further help.";
+			$json['error'] = "Either your credit card was declined or there was an error. Try again or contact us for further help.";
 		}
 		
 		$this->model_checkout_order->confirm(

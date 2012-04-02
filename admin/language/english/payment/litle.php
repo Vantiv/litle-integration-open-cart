@@ -16,19 +16,16 @@ $_['text_payment_method']			 = 'Credit Card / Debit Card (Litle & Co.)';
 $_['text_capture']       			 = 'Capture';
 $_['text_refund']		        	 = 'Refund';
 $_['text_reauth']			         = 'Re-Authorize';
-$_['text_partial_capture']			 = 'Partial Capture';
 $_['text_auth_reversal']			 = 'Reverse Auth';
-$_['text_partial_refund']			 = 'Partial Refund';
+$_['text_void']			             = 'Void';
 $_['text_litle_response_code']		 = 'Litle Response Code:';
 $_['text_litle_transaction_id']		 = 'Litle Transaction ID:';
-$_['text_litle_partial_refund_txn']  = 'LitlePartialRefundTxn';
 $_['text_litle_refund_txn']			 = 'LitleRefundTxn';
 $_['text_litle_txn']				 = 'LitleTxn';
 $_['text_litle_auth_txn']			 = 'LitleAuthTxn';
-$_['text_litle_partial_capture_txn'] = 'LitlePartialCaptureTxn';
 $_['text_litle_capture_txn']		 = 'LitleCaptureTxn';
 $_['text_litle_auth_reversal_txn']	 = 'LitleAuthReversalTxn';
-$_['text_litle_partial_auth_reversal_txn']	 = 'LitlePartialAuthReversalTxn';
+$_['text_litle_void_txn']			 = 'LitleVoidTxn';
 
 
 // Entry

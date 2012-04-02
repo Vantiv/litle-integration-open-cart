@@ -183,6 +183,11 @@ class ControllerSaleOrder extends Controller {
   	}
 
   	private function getList() {
+  		if(isset($this->session->data['litle_warning'])){
+  			$this->error['warning'] = $this->session->data['litle_warning'];
+  			unset($this->session->data['litle_warning']);
+  		}
+  		
 		if (isset($this->request->get['filter_order_id'])) {
 			$filter_order_id = $this->request->get['filter_order_id'];
 		} else {
@@ -332,14 +337,6 @@ class ControllerSaleOrder extends Controller {
 										'text' => $litleActionText,
 										'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
 					);
-					//TODO: Fix the URL to do a proper partial capture
-					// Add Partial Capture
-					$litleActionText = $this->language->get('text_partial_capture');
-					$litleActionHref = "payment/litle/partialCapture";
-					$litleAction[] = array(
-										'text' => $litleActionText,
-										'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
-					);
 					// Add Auth-Reversal
 					$litleActionText = $this->language->get('text_auth_reversal');
 					$litleActionHref = "payment/litle/authReversal";
@@ -358,30 +355,14 @@ class ControllerSaleOrder extends Controller {
 										'text' => $litleActionText,
 										'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
 					);
-					//TODO: Fix the URL to do a proper partial refund
-					// Add Partial Refund
-					$litleActionText = $this->language->get('text_partial_refund');
-					$litleActionHref = "payment/litle/partialRefund";
-					$litleAction[] = array(
-										'text' => $litleActionText,
-										'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
-					);
 					
 					if( $result['order_status_id'] == 2 ){
 						// Add Capture
 						$litleActionText = $this->language->get('text_capture');
 						$litleActionHref = "payment/litle/capture";
 						$litleAction[] = array(
-																'text' => $litleActionText,
-																'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
-						);
-						//TODO: Fix the URL to do a proper partial capture
-						// Add Partial Capture
-						$litleActionText = $this->language->get('text_partial_capture');
-						$litleActionHref = "payment/litle/partialCapture";
-						$litleAction[] = array(
-																'text' => $litleActionText,
-																'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
+													'text' => $litleActionText,
+													'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
 						);
 					}
 				}
@@ -390,8 +371,18 @@ class ControllerSaleOrder extends Controller {
 					$litleActionText = $this->language->get('text_reauth');
 					$litleActionHref = "payment/litle/reauthorize";
 					$litleAction[] = array(
-															'text' => $litleActionText,
-															'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
+											'text' => $litleActionText,
+											'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
+					);
+				}
+				
+				if($result['order_status_id'] != 16) {
+					// Add Void
+					$litleActionText = $this->language->get('text_void');
+					$litleActionHref = "payment/litle/voidTxn";
+					$litleAction[] = array(
+											'text' => $litleActionText,
+											'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
 					);
 				}
 			}
