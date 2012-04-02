@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+
+	<id>Litle Stuff</id>
+	<version>1.0.0</version>
+	<vqmver>2.1.5</vqmver>
+	<author>Litle</author>
+<!--
+	<file name="admin/view/template/sale/order_list.tpl" error="log">
+
+		<operation>
+			<search position="after"><![CDATA[
+			<td class="right"><?php echo $column_action; ?></td>
+			]]></search>
+			<add><![CDATA[
+			<?php require 'admin/view/template/sale/litle_sale_order_list.php' ;?>
+			]]></add>
+		</operation>
+
+	</file>
+ -->
+</modification>
+
