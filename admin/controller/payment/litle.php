@@ -277,6 +277,7 @@ class ControllerPaymentLitle extends Controller {
 			$litleTextToLookFor = $this->language->get('text_litle_capture_txn');
 			$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
 			$litleResponse = $litleRequest->creditRequest($hash_in);
+			$successMessageString = $this->language->get('text_refund');
 		}
 		// Capture
 		else if($typeOfTransaction == "Capture")
@@ -287,6 +288,7 @@ class ControllerPaymentLitle extends Controller {
 			$litleTextToLookFor = $this->language->get('text_litle_auth_txn');
 			$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
 			$litleResponse = $litleRequest->captureRequest($hash_in);
+			$successMessageString = $this->language->get('text_capture');
 		}
 		// Re-Authorize
 		else if($typeOfTransaction == "ReAuthorize")
@@ -304,6 +306,7 @@ class ControllerPaymentLitle extends Controller {
 				$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
 			}
 			$litleResponse = $litleRequest->authorizationRequest($hash_in);
+			$successMessageString = $this->language->get('text_reauth');
 		}
 		// Auth-Reversal
 		else if($typeOfTransaction == "AuthReversal")
@@ -313,6 +316,7 @@ class ControllerPaymentLitle extends Controller {
 			$litleTxtToInsertInComment = $this->language->get('text_litle_auth_reversal_txn');
 			$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
 			$litleResponse = $litleRequest->authReversalRequest($hash_in);
+			$successMessageString = $this->language->get('text_auth_reversal');
 		}
 		else if($typeOfTransaction == "VoidTxn")
 		{
@@ -323,6 +327,7 @@ class ControllerPaymentLitle extends Controller {
 			{
 				$litleResponse = $litleRequest->voidRequest($hash_in);
 			}
+			$successMessageString = $this->language->get('text_void');
 		}
 		
 		if( isset($litleResponse))
@@ -337,7 +342,7 @@ class ControllerPaymentLitle extends Controller {
 				$this->error['warning'] = "There was an error processing requested transaction. Please try again or contact Litle.";
 			}
 			
-			$this->session->data['success'] = "Litle Transaction Successful!";
+			$this->session->data['success'] = "Litle " . $successMessageString . " Transaction Successful!";
 			
 			$comment = $litleTxtToInsertInComment . ": " . XMLParser::getNode($litleResponse,'message') . " \n ". $this->language->get('text_litle_response_code') . " " . $litleResponseCode . "\n ". $this->language->get('text_litle_transaction_id'). " " . XMLParser::getNode($litleResponse,'litleTxnId');
 			
