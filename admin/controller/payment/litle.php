@@ -268,7 +268,6 @@ class ControllerPaymentLitle extends Controller {
 		$order_status_id = 1;
 		$hash_in = array();
 		$litleRequest = new LitleOnlineRequest();
-		$litleResponse = "";
 		
 		// Refunds
 		if($typeOfTransaction == "Refund")
@@ -320,7 +319,10 @@ class ControllerPaymentLitle extends Controller {
 			$order_status_id = (isset($latest_order_history))? $latest_order_history[(count($latest_order_history)-2)]['order_status_id'] : 16;	//last txn
 			$litleTxtToInsertInComment = $this->language->get('text_litle_void_txn');
 			$hash_in = $this->getHashInWithLitleTxnId();
-			$litleResponse = $litleRequest->voidRequest($hash_in);
+			if( (isset($hash_in)) && ($hash_in['litleTxnId'] != NULL) )
+			{
+				$litleResponse = $litleRequest->voidRequest($hash_in);
+			}
 		}
 		
 		if( isset($litleResponse))
@@ -334,6 +336,8 @@ class ControllerPaymentLitle extends Controller {
 				}
 				$this->error['warning'] = "There was an error processing requested transaction. Please try again or contact Litle.";
 			}
+			
+			$this->session->data['success'] = "Litle Transaction Successful!";
 			
 			$comment = $litleTxtToInsertInComment . ": " . XMLParser::getNode($litleResponse,'message') . " \n ". $this->language->get('text_litle_response_code') . " " . $litleResponseCode . "\n ". $this->language->get('text_litle_transaction_id'). " " . XMLParser::getNode($litleResponse,'litleTxnId');
 			
