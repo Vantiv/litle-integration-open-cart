@@ -38,6 +38,8 @@ class ControllerPaymentLitle extends Controller {
 		$this->data['merchant_password'] = $this->language->get('merchant_password');
 		$this->data['default_report_group'] = $this->language->get('default_report_group');
 		$this->data['entry_mode'] = $this->language->get('entry_mode');
+		$this->data['litle_proxy'] = $this->language->get('litle_proxy');
+		$this->data['litle_timeout'] = $this->language->get('litle_timeout');
 		$this->data['entry_transaction'] = $this->language->get('entry_transaction');
 		$this->data['entry_debug'] = $this->language->get('entry_debug');
 		$this->data['entry_total'] = $this->language->get('entry_total');
@@ -124,13 +126,25 @@ class ControllerPaymentLitle extends Controller {
 		if (isset($this->request->post['litle_default_report_group'])) {
 			$this->data['litle_default_report_group'] = $this->request->post['litle_default_report_group'];
 		} else {
-			$this->data['litle_default_report_group'] = "Default Report Group";
+			$this->data['litle_default_report_group'] = ($this->config->get('litle_default_report_group') == "") ? "Default Report Group" : $this->config->get('litle_default_report_group');
 		}
 
 		if (isset($this->request->post['litle_url'])) {
 			$this->data['litle_url'] = $this->request->post['litle_url'];
 		} else {
 			$this->data['litle_url'] = $this->config->get('litle_url');
+		}
+		
+		if (isset($this->request->post['litle_proxy_value'])) {
+			$this->data['litle_proxy_value'] = $this->request->post['litle_proxy_value'];
+		} else {
+			$this->data['litle_proxy_value'] = $this->config->get('litle_proxy_value');
+		}
+		
+		if (isset($this->request->post['litle_timeout_value'])) {
+			$this->data['litle_timeout_value'] = $this->request->post['litle_timeout_value'];
+		} else {
+			$this->data['litle_timeout_value'] = $this->config->get('litle_timeout_value');
 		}
 
 		if (isset($this->request->post['litle_transaction'])) {
@@ -212,6 +226,19 @@ class ControllerPaymentLitle extends Controller {
 
 	// ##############################################################################
 	// ################ Call handlers from Orders Page -- admin side ################
+	public function merchantDataFromOC()
+	{
+		$hash = array('user'=> $this->config->get('litle_merchant_user_name'),
+	 					'password'=> $this->config->get('litle_merchant_password'),
+						'merchantId'=>$this->config->get('litle_merchant_id'),
+						'reportGroup'=>$this->config->get('litle_default_report_group'),
+						'url'=>UrlMapper::getUrl(trim($this->config->get('litle_url'))),	
+						'proxy'=>$this->config->get('litle_proxy_value'),
+						'timeout'=>$this->config->get('litle_timeout_value')
+		);
+		return $hash;
+	}
+	
 	public function findLitleTxnId($txnType=NULL)
 	{
 		$order_id = $this->request->get['order_id'];
@@ -266,7 +293,7 @@ class ControllerPaymentLitle extends Controller {
 		$litleTextToLookFor = "";
 		$litleTextToInsertInComment = "";
 		$order_status_id = 1;
-		$hash_in = array();
+		$merchantConfig = merchantDataFromOC();
 		$litleRequest = new LitleOnlineRequest();
 		
 		// Refunds
@@ -275,7 +302,7 @@ class ControllerPaymentLitle extends Controller {
 			$order_status_id = 11;	//Refunded
 			$litleTxtToInsertInComment = $this->language->get('text_litle_refund_txn');
 			$litleTextToLookFor = $this->language->get('text_litle_capture_txn');
-			$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
+			$hash_in = array_merge($merchantConfig, $this->getHashInWithLitleTxnId($litleTextToLookFor));
 			$litleResponse = $litleRequest->creditRequest($hash_in);
 			$successMessageString = $this->language->get('text_refund');
 		}
@@ -286,7 +313,7 @@ class ControllerPaymentLitle extends Controller {
 			$order_status_id = 5;	//Complete
 			$litleTxtToInsertInComment = $this->language->get('text_litle_capture_txn');
 			$litleTextToLookFor = $this->language->get('text_litle_auth_txn');
-			$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
+			$hash_in = array_merge($merchantConfig, $this->getHashInWithLitleTxnId($litleTextToLookFor));
 			$litleResponse = $litleRequest->captureRequest($hash_in);
 			$successMessageString = $this->language->get('text_capture');
 		}
@@ -299,12 +326,11 @@ class ControllerPaymentLitle extends Controller {
 			$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
 			if($hash_in['litleTxnId'] == NULL){
 				$litleTextToLookFor = $this->language->get('text_litle_txn');
-				$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
 			}
 			if($hash_in['litleTxnId'] == NULL){
 				$litleTextToLookFor = $this->language->get('text_litle_auth_reversal_txn');
-				$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
 			}
+			$hash_in = array_merge($merchantConfig, $this->getHashInWithLitleTxnId($litleTextToLookFor));
 			$litleResponse = $litleRequest->authorizationRequest($hash_in);
 			$successMessageString = $this->language->get('text_reauth');
 		}
@@ -314,7 +340,7 @@ class ControllerPaymentLitle extends Controller {
 			$litleTextToLookFor = $this->language->get('text_litle_auth_txn');
 			$order_status_id = 12;	//Reversed
 			$litleTxtToInsertInComment = $this->language->get('text_litle_auth_reversal_txn');
-			$hash_in = $this->getHashInWithLitleTxnId($litleTextToLookFor);
+			$hash_in = array_merge($merchantConfig, $this->getHashInWithLitleTxnId($litleTextToLookFor));
 			$litleResponse = $litleRequest->authReversalRequest($hash_in);
 			$successMessageString = $this->language->get('text_auth_reversal');
 		}
@@ -322,7 +348,7 @@ class ControllerPaymentLitle extends Controller {
 		{
 			$order_status_id = (isset($latest_order_history))? $latest_order_history[(count($latest_order_history)-2)]['order_status_id'] : 16;	//last txn
 			$litleTxtToInsertInComment = $this->language->get('text_litle_void_txn');
-			$hash_in = $this->getHashInWithLitleTxnId();
+			$hash_in = array_merge($merchantConfig, $this->getHashInWithLitleTxnId());
 			if( (isset($hash_in)) && ($hash_in['litleTxnId'] != NULL) )
 			{
 				$litleResponse = $litleRequest->voidRequest($hash_in);

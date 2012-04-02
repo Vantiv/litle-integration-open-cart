@@ -1,27 +1,27 @@
 <?php
 /*
  * Copyright (c) 2011 Litle & Co.
- * 
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use,
- * copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following
- * conditions:
- * 
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+*
+* Permission is hereby granted, free of charge, to any person
+* obtaining a copy of this software and associated documentation
+* files (the "Software"), to deal in the Software without
+* restriction, including without limitation the rights to use,
+* copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the
+* Software is furnished to do so, subject to the following
+* conditions:
+*
+* The above copyright notice and this permission notice shall be
+* included in all copies or substantial portions of the Software.
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND
+* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+* OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+* NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+* HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+* OTHER DEALINGS IN THE SOFTWARE.
+*/
 
 class LitleOnlineRequest
 {
@@ -36,7 +36,7 @@ class LitleOnlineRequest
 			$hash_out = array('litleTxnId'=> ($hash_in['litleTxnId']));
 		}
 		else {
-		$hash_out = array(
+			$hash_out = array(
 			'orderId'=> Checker::requiredField($hash_in['orderId']),
 			'amount'=>Checker::requiredField($hash_in['amount']),
 			'orderSource'=>Checker::requiredField($hash_in['orderSource']),
@@ -181,7 +181,7 @@ class LitleOnlineRequest
 	{
 		$hash_out = array(
 		'partial'=>$hash_in['partial'],
-	    	'litleTxnId' => Checker::requiredField($hash_in['litleTxnId']),
+	    'litleTxnId' => Checker::requiredField($hash_in['litleTxnId']),
 		'amount' =>($hash_in['amount']),
 		'enhancedData'=>XmlFields::enhancedData($hash_in['enhancedData']),
 		'processingInstructions'=>XmlFields::processingInstructions($hash_in['processingInstructions']),
@@ -222,7 +222,7 @@ class LitleOnlineRequest
 		'litleTxnId' => Checker::requiredField($hash_in['litleTxnId']),
 		'echeck'=>XmlFields::echeckType($hash_in['echeck']),
 		'echeckToken'=>XmlFields::echeckTokenType($hash_in['echeckToken']));
-
+		
 		$choice_hash = array($hash_out['echeck'],$hash_out['echeckToken']);
 		$echeckRedepositResponse = LitleOnlineRequest::processRequest($hash_out,$hash_in,'echeckRedeposit',$choice_hash);
 		return $echeckRedepositResponse;
@@ -267,6 +267,7 @@ class LitleOnlineRequest
 
 	public function echeckVerificationRequest($hash_in)
 	{
+		
 		$hash_out = array(
 			'litleTxnId'=>$hash_in['litleTxnId'],
 			'orderId'=>Checker::requiredField($hash_in['orderId']),
@@ -275,8 +276,7 @@ class LitleOnlineRequest
 			'billToAddress'=>XmlFields::contact($hash_in['billToAddress']),
 			'echeck'=>XmlFields::echeckType($hash_in['echeck']),
 			'echeckToken'=>XmlFields::echeckTokenType($hash_in['echeckToken']));
-
-
+		
 		$choice_hash = array($hash_out['echeck'],$hash_out['echeckToken']);
 		$choice_hash = array($hash_out['echeck'],$hash_out['echeckToken']);
 		$echeckVerificationResponse = LitleOnlineRequest::processRequest($hash_out,$hash_in,'echeckVerification',$choice_hash);
@@ -292,7 +292,16 @@ class LitleOnlineRequest
 		$voidResponse = LitleOnlineRequest::processRequest($hash_out,$hash_in,'void');
 		return $voidResponse;
 	}
-	
+
+	public function echeckVoidRequest($hash_in)
+	{
+		$hash_out = array(
+		'litleTxnId' => Checker::requiredField($hash_in['litleTxnId']),
+		);
+		$echeckVoidResponse = LitleOnlineRequest::processRequest($hash_out,$hash_in,"echeckVoid");
+		return $echeckVoidResponse;
+	}
+
 	private function overideConfig($hash_in)
 	{
 		$hash_out = array(
@@ -301,19 +310,23 @@ class LitleOnlineRequest
 		'merchantId'=>$hash_in['merchantId'],
 		'reportGroup'=>$hash_in['reportGroup'],
 		'id'=>$hash_in['id'],
-		'version'=>$hash_in['version']);
+		'version'=>$hash_in['version'],
+		'url'=>$hash_in['url'],
+		'timeout'=>$hash_in['timeout'],
+		'proxy'=>$hash_in['proxy']);
 		return $hash_out;
 	}
-	
+
 	private function processRequest($hash_out, $hash_in, $type, $choice1 = null, $choice2 = null)
 	{
 		$hash_config = LitleOnlineRequest::overideconfig($hash_in);
 		Checker::choice($choice1);
 		Checker::choice($choice2);
 		$request = Obj2xml::toXml($hash_out,$hash_config, $type);
-		$litleOnlineResponse = $this->newXML->request($request);
+		
+		$litleOnlineResponse = $this->newXML->request($request,$hash_config);
 		return $litleOnlineResponse;
 	}
-	
+
 }
 

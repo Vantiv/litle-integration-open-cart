@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2011 Litle & Co.
+* Copyright (c) 2011 Litle & Co.
 *
 * Permission is hereby granted, free of charge, to any person
 * obtaining a copy of this software and associated documentation
@@ -22,30 +22,21 @@
 * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 * OTHER DEALINGS IN THE SOFTWARE.
 */
-class Communication{
-	function httpRequest($req,$hash_config=NULL){
-		$config = Obj2xml::getConfig($hash_config);
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_PROXY, $config['proxy']);
-		curl_setopt($ch, CURLOPT_POST, true);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: text/xml'));
-		curl_setopt($ch, CURLOPT_URL, $config['url']);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $req);
-		curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, true);
-		curl_setopt($ch,CURLOPT_TIMEOUT, $config['timeout']);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,2);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		$output = curl_exec($ch);
-		$responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		if (! $output){
-			throw new Exception (curl_error($ch));
-		}
+class UrlMapper
+{
+	public static function getUrl($litleEnv){
+		$litleOnlineCtx = 'vap/communicator/online';
+		if ($litleEnv == "sandbox")
+			return 'https://www.testlitle.com/sandbox/communicator/online';
+		elseif ($litleEnv == "cert")
+			return 'https://cert.litle.com/' . $litleOnlineCtx;
+		elseif ($litleEnv == "precert")
+			return 'https://precert.litle.com/' . $litleOnlineCtx;
+		elseif ($litleEnv == "production1")
+			return 'https://payments.litle.com/' . $litleOnlineCtx;
+		elseif ($litleEnv == "production2")
+			return 'https://payments2.litle.com/' . $litleOnlineCtx;
 		else
-		{
-			curl_close($ch);
-			return $output;
-		}
-
+			return 'https://www.testlitle.com/sandbox/communicator/online';
 	}
 }
