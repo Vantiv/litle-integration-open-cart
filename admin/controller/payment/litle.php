@@ -269,16 +269,6 @@ class ControllerPaymentLitle extends Controller {
 		);
 	}
 	
-	public function getAmountInCorrectFormat($amount) {
-		$retVal = str_replace(",", '', $amount);
-		$posOfDot = strpos($retVal, ".");
-		if($posOfDot != FALSE){
-			$retVal = substr($retVal, 0, $posOfDot + 3);
-			$retVal = str_replace(".", '', $retVal);
-		}
-		return $retVal;
-	}
-	
 	public function makeTheTransaction($typeOfTransaction)
 	{
 		$this->load->language('payment/litle');

@@ -34,8 +34,7 @@ class ControllerPaymentAuthorizenetAim extends Controller {
 		$this->data['entry_mode'] = $this->language->get('entry_mode');
 		$this->data['entry_method'] = $this->language->get('entry_method');
 		$this->data['entry_total'] = $this->language->get('entry_total');	
-		//$this->data['entry_order_status'] = $this->language->get('entry_order_status');
-		$this->data['entry_order_status'] = "Archit's order status: ";
+		$this->data['entry_order_status'] = $this->language->get('entry_order_status');		
 		$this->data['entry_geo_zone'] = $this->language->get('entry_geo_zone');
 		$this->data['entry_status'] = $this->language->get('entry_status');
 		$this->data['entry_sort_order'] = $this->language->get('entry_sort_order');
@@ -171,24 +170,23 @@ class ControllerPaymentAuthorizenetAim extends Controller {
 	}
 
 	private function validate() {
-// 		if (!$this->user->hasPermission('modify', 'payment/authorizenet_aim')) {
-// 			$this->error['warning'] = $this->language->get('error_permission');
-// 		}
+		if (!$this->user->hasPermission('modify', 'payment/authorizenet_aim')) {
+			$this->error['warning'] = $this->language->get('error_permission');
+		}
 		
-// 		if (!$this->request->post['authorizenet_aim_login']) {
-// 			$this->error['login'] = $this->language->get('error_login');
-// 		}
+		if (!$this->request->post['authorizenet_aim_login']) {
+			$this->error['login'] = $this->language->get('error_login');
+		}
 
-// 		if (!$this->request->post['authorizenet_aim_key']) {
-// 			$this->error['key'] = $this->language->get('error_key');
-// 		}
+		if (!$this->request->post['authorizenet_aim_key']) {
+			$this->error['key'] = $this->language->get('error_key');
+		}
 		
-// 		if (!$this->error) {
-// 			return true;
-// 		} else {
-// 			return false;
-// 		}
-		return true;	
+		if (!$this->error) {
+			return true;
+		} else {
+			return false;
+		}	
 	}
 }
 ?>

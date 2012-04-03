@@ -114,32 +114,24 @@ class ControllerExtensionPayment extends Controller {
 	}
 	
 	public function install() {
-		echo "at the top";
 		if (!$this->user->hasPermission('modify', 'extension/payment')) {
-			echo "failed permission";
 			$this->session->data['error'] = $this->language->get('error_permission'); 
 			
 			$this->redirect($this->url->link('extension/payment', 'token=' . $this->session->data['token'], 'SSL'));
 		} else {
-			echo "permission passed";
 			$this->load->model('setting/extension');
 		
 			$this->model_setting_extension->install('payment', $this->request->get['extension']);
 
 			$this->load->model('user/user_group');
 		
-			echo "before setting user group permissions";
 			$this->model_user_user_group->addPermission($this->user->getId(), 'access', 'payment/' . $this->request->get['extension']);
 			$this->model_user_user_group->addPermission($this->user->getId(), 'modify', 'payment/' . $this->request->get['extension']);
 
-			echo "before the require once \n\n\n\n\n";
-			echo "request get extension" . $this->request->get['extension'];
 			require_once(DIR_APPLICATION . 'controller/payment/' . $this->request->get['extension'] . '.php');
-			echo "after the require ... still alive ... maybe";
 			
 			$class = 'ControllerPayment' . str_replace('_', '', $this->request->get['extension']);
 			$class = new $class($this->registry);
-			echo "trying to create a new class ... ";
 			
 			if (method_exists($class, 'install')) {
 				$class->install();
