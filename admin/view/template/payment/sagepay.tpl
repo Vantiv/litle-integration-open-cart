@@ -18,7 +18,7 @@
         <table class="form">
           <tr>
             <td><span class="required">*</span> <?php echo $entry_vendor; ?></td>
-            <td>bwahahahahaha!<input type="text" name="sagepay_vendor" value="<?php echo $sagepay_vendor; ?>" />
+            <td><input type="text" name="sagepay_vendor" value="<?php echo $sagepay_vendor; ?>" />
               <?php if ($error_vendor) { ?>
               <span class="error"><?php echo $error_vendor; ?></span>
               <?php } ?></td>

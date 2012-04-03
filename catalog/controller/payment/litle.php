@@ -1,5 +1,5 @@
 <?php
-require_once($vqmod->modCheck(DIR_SYSTEM . 'library/litle/LitleOnline.php'));
+require_once DIR_SYSTEM . 'library/litle/LitleOnline.php';
 
 class ControllerPaymentLitle extends Controller {
 	protected function index() {
@@ -109,7 +109,8 @@ class ControllerPaymentLitle extends Controller {
 	}
 	
 	public function send() {
- 		$this->load->model('checkout/order');
+		restore_error_handler();
+		$this->load->model('checkout/order');
  		$order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
 				
  		$orderAmountToInsert = $this->getAmountInCorrectFormat($order_info['total']);
@@ -172,8 +173,8 @@ class ControllerPaymentLitle extends Controller {
 			$message,
 			true
 		);
-		
 		$this->response->setOutput(json_encode($json));
+		set_error_handler('error_handler');
 	}
 }
 ?>

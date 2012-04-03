@@ -1,0 +1,120 @@
+<modification>
+    <id>Litle Payments</id>
+      <version>8.10</version>
+      <vqmver>2.1.5</vqmver>
+      <author>www.litle.com/developers</author>
+<file name="admin/controller/sale/order.php">
+    <operation>
+			<search position="after"><![CDATA[private function getList() { ]]></search>
+			<add><![CDATA[
+      if(isset($this->session->data['litle_warning'])){
+  			$this->error['warning'] = $this->session->data['litle_warning'];
+  			unset($this->session->data['litle_warning']);
+  		}
+  		
+		$this->load->language('payment/litle');
+		$litlePaymentMethod = $this->language->get('text_payment_method');
+  		
+      ]]></add>
+	</operation>
+ 	<operation>
+			<search position="after" offset="1"><![CDATA['href' => $this->url->link('sale/order/info', 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')]]></search>
+			<add><![CDATA[
+      
+			$litleActionText = "";
+			$litleActionHref = "";
+			$litleAction = array();
+			if($result['payment_method'] == $litlePaymentMethod) {
+				if($result['order_status_id'] == 1){ // Pending
+					// Add Capture
+					$litleActionText = $this->language->get('text_capture');
+					$litleActionHref = "payment/litle/capture";
+					$litleAction[] = array(
+										'text' => $litleActionText,
+										'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
+					);
+					// Add Auth-Reversal
+					$litleActionText = $this->language->get('text_auth_reversal');
+					$litleActionHref = "payment/litle/authReversal";
+					$litleAction[] = array(
+										'text' => $litleActionText,
+										'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
+					);
+				}
+				else if($result['order_status_id'] == 2 || $result['order_status_id'] == 3 || 
+						$result['order_status_id'] == 7 || $result['order_status_id'] == 5 || 
+						$result['order_status_id'] == 15){
+					// Add Refund
+					$litleActionText = $this->language->get('text_refund');
+					$litleActionHref = "payment/litle/refund";
+					$litleAction[] = array(
+										'text' => $litleActionText,
+										'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
+					);
+					
+					if( $result['order_status_id'] == 2 ){
+						// Add Capture
+						$litleActionText = $this->language->get('text_capture');
+						$litleActionHref = "payment/litle/capture";
+						$litleAction[] = array(
+													'text' => $litleActionText,
+													'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
+						);
+					}
+				}
+				else if($result['order_status_id'] == 14 || $result['order_status_id'] == 10){
+					// Add Re-Authorize
+					$litleActionText = $this->language->get('text_reauth');
+					$litleActionHref = "payment/litle/reauthorize";
+					$litleAction[] = array(
+											'text' => $litleActionText,
+											'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
+					);
+				}
+				
+				if($result['order_status_id'] != 16) {
+					// Add Void
+					$litleActionText = $this->language->get('text_void');
+					$litleActionHref = "payment/litle/voidTxn";
+					$litleAction[] = array(
+											'text' => $litleActionText,
+											'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
+					);
+				}
+			}
+			
+      ]]></add>
+	</operation>
+	<operation>
+			<search position="after" offset="2"><![CDATA['date_modified' => date($this->language->get('date_format_short'), strtotime($result['date_modified'])), ]]></search>
+			<add><![CDATA[				,'litleAction'	=> $litleAction,
+      			]]></add>
+	</operation>
+</file>
+<file name="admin/model/sale/order.php">
+    <operation>
+			<search position="replace"><![CDATA[$sql = "SELECT o.order_id, CONCAT(o.firstname, ' ', o.lastname) AS customer, (SELECT os.name FROM " . DB_PREFIX . "order_status os WHERE os.order_status_id = o.order_status_id AND os.language_id = '" . (int)$this->config->get('config_language_id') . "') AS status, o.total, o.currency_code, o.currency_value, o.date_added, o.date_modified FROM `" . DB_PREFIX . "order` o"; ]]></search>
+			<add><![CDATA[$sql = "SELECT o.order_id, CONCAT(o.firstname, ' ', o.lastname) AS customer, (SELECT os.name FROM " . DB_PREFIX . "order_status os WHERE os.order_status_id = o.order_status_id AND os.language_id = '" . (int)$this->config->get('config_language_id') . "') AS status, o.total, o.currency_code, o.currency_value, o.date_added, o.date_modified, o.order_status_id, o.payment_method FROM `" . DB_PREFIX . "order` o";]]></add>
+	</operation>
+	<operation>
+			<search position="replace"><![CDATA[$query = $this->db->query("SELECT oh.date_added, os.name AS status, oh.comment, oh.notify FROM " . DB_PREFIX . "order_history oh LEFT JOIN " . DB_PREFIX . "order_status os ON oh.order_status_id = os.order_status_id WHERE oh.order_id = '" . (int)$order_id . "' AND os.language_id = '" . (int)$this->config->get('config_language_id') . "' ORDER BY oh.date_added ASC LIMIT " . (int)$start . "," . (int)$limit); ]]></search>
+			<add><![CDATA[$query = $this->db->query("SELECT oh.date_added, os.name AS status, oh.comment, oh.notify, oh.order_status_id FROM " . DB_PREFIX . "order_history oh LEFT JOIN " . DB_PREFIX . "order_status os ON oh.order_status_id = os.order_status_id WHERE oh.order_id = '" . (int)$order_id . "' AND os.language_id = '" . (int)$this->config->get('config_language_id') . "' ORDER BY oh.date_added ASC LIMIT " . (int)$start . "," . (int)$limit);]]></add>
+	</operation>
+</file>
+<file name="admin/view/template/sale/order_list.tpl">
+    <operation>
+			<search position="after"><![CDATA[<td class="right"><?php echo $column_action; ?></td> ]]></search>
+			<add><![CDATA[<td class="right"> Litle Actions</td>]]></add>
+	</operation>
+	<operation>
+			<search position="after"><![CDATA[<td align="right"><a onclick="filter();" class="button"><?php echo $button_filter; ?></a></td> ]]></search>
+			<add><![CDATA[<td/>]]></add>
+	</operation>
+	<operation>
+			<search position="after"><![CDATA[[ <a href="<?php echo $action['href']; ?>"><?php echo $action['text']; ?></a> ] ]]></search>
+			<add><![CDATA[<?php } ?></td>
+              <td class="right"><?php foreach ($order['litleAction'] as $litleAction) { ?>
+                [ <a href="<?php echo $litleAction['href']; ?>"><?php echo $litleAction['text']; ?></a> ]]]></add>
+	</operation>
+</file>					       			
+</modification>

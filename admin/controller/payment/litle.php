@@ -1,5 +1,5 @@
 <?php
-require_once($vqmod->modCheck(DIR_SYSTEM . 'library/litle/LitleOnline.php'));
+require_once DIR_SYSTEM . 'library/litle/LitleOnline.php';
 
 class ControllerPaymentLitle extends Controller {
 	private $error = array();
@@ -198,6 +198,7 @@ class ControllerPaymentLitle extends Controller {
 		);
 
 		$this->response->setOutput($this->render());
+		set_error_handler('error_handler');
 	}
 
 	private function validate() {
@@ -271,9 +272,9 @@ class ControllerPaymentLitle extends Controller {
 	
 	public function makeTheTransaction($typeOfTransaction)
 	{
+		restore_error_handler();
 		$this->load->language('payment/litle');
 		
-		restore_error_handler();
 		$order_id = $this->request->get['order_id'];
 		
 		$this->load->model('sale/order');
@@ -283,7 +284,7 @@ class ControllerPaymentLitle extends Controller {
 		$litleTextToLookFor = "";
 		$litleTextToInsertInComment = "";
 		$order_status_id = 1;
-		$merchantConfig = merchantDataFromOC();
+		$merchantConfig = $this->merchantDataFromOC();
 		$litleRequest = new LitleOnlineRequest();
 		
 		// Refunds
@@ -402,5 +403,4 @@ class ControllerPaymentLitle extends Controller {
 		$this->makeTheTransaction("VoidTxn");
 	}
 }
-
 ?>

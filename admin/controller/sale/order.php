@@ -183,12 +183,6 @@ class ControllerSaleOrder extends Controller {
   	}
 
   	private function getList() {
-  		if(isset($this->session->data['litle_warning'])){
-  			$this->error['warning'] = $this->session->data['litle_warning'];
-  			unset($this->session->data['litle_warning']);
-  		}
-  		
-  		
 		if (isset($this->request->get['filter_order_id'])) {
 			$filter_order_id = $this->request->get['filter_order_id'];
 		} else {
@@ -316,77 +310,14 @@ class ControllerSaleOrder extends Controller {
 		$order_total = $this->model_sale_order->getTotalOrders($data);
 
 		$results = $this->model_sale_order->getOrders($data);
-		
-		$this->load->language('payment/litle');
-		$litlePaymentMethod = $this->language->get('text_payment_method');
+
     	foreach ($results as $result) {
 			$action = array();
+						
 			$action[] = array(
 				'text' => $this->language->get('text_view'),
 				'href' => $this->url->link('sale/order/info', 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
 			);
-			
-			$litleActionText = "";
-			$litleActionHref = "";
-			$litleAction = array();
-			if($result['payment_method'] == $litlePaymentMethod) {
-				if($result['order_status_id'] == 1){ // Pending
-					// Add Capture
-					$litleActionText = $this->language->get('text_capture');
-					$litleActionHref = "payment/litle/capture";
-					$litleAction[] = array(
-										'text' => $litleActionText,
-										'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
-					);
-					// Add Auth-Reversal
-					$litleActionText = $this->language->get('text_auth_reversal');
-					$litleActionHref = "payment/litle/authReversal";
-					$litleAction[] = array(
-										'text' => $litleActionText,
-										'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
-					);
-				}
-				else if($result['order_status_id'] == 2 || $result['order_status_id'] == 3 || 
-						$result['order_status_id'] == 7 || $result['order_status_id'] == 5 || 
-						$result['order_status_id'] == 15){
-					// Add Refund
-					$litleActionText = $this->language->get('text_refund');
-					$litleActionHref = "payment/litle/refund";
-					$litleAction[] = array(
-										'text' => $litleActionText,
-										'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
-					);
-					
-					if( $result['order_status_id'] == 2 ){
-						// Add Capture
-						$litleActionText = $this->language->get('text_capture');
-						$litleActionHref = "payment/litle/capture";
-						$litleAction[] = array(
-													'text' => $litleActionText,
-													'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
-						);
-					}
-				}
-				else if($result['order_status_id'] == 14 || $result['order_status_id'] == 10){
-					// Add Re-Authorize
-					$litleActionText = $this->language->get('text_reauth');
-					$litleActionHref = "payment/litle/reauthorize";
-					$litleAction[] = array(
-											'text' => $litleActionText,
-											'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
-					);
-				}
-				
-				if($result['order_status_id'] != 16) {
-					// Add Void
-					$litleActionText = $this->language->get('text_void');
-					$litleActionHref = "payment/litle/voidTxn";
-					$litleAction[] = array(
-											'text' => $litleActionText,
-											'href' => $this->url->link($litleActionHref, 'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url, 'SSL')
-					);
-				}
-			}
 			
 			/*
 			Commented out until I can finish the order editing system.
@@ -404,10 +335,9 @@ class ControllerSaleOrder extends Controller {
 				'date_added'    => date($this->language->get('date_format_short'), strtotime($result['date_added'])),
 				'date_modified' => date($this->language->get('date_format_short'), strtotime($result['date_modified'])),
 				'selected'      => isset($this->request->post['selected']) && in_array($result['order_id'], $this->request->post['selected']),
-				'action'        => $action,
-				'litleAction'	=> $litleAction,
+				'action'        => $action
 			);
-		}		
+		}
 
 		$this->data['heading_title'] = $this->language->get('heading_title');
 
@@ -421,8 +351,7 @@ class ControllerSaleOrder extends Controller {
 		$this->data['column_date_added'] = $this->language->get('column_date_added');
 		$this->data['column_date_modified'] = $this->language->get('column_date_modified');
 		$this->data['column_action'] = $this->language->get('column_action');
-		$this->data['column_litle_actions'] = "Litle Actions";
-		
+
 		$this->data['button_invoice'] = $this->language->get('button_invoice');
 		$this->data['button_delete'] = $this->language->get('button_delete');
 		$this->data['button_filter'] = $this->language->get('button_filter');

@@ -18,7 +18,7 @@
         <table class="form">
           <tr>
             <td><span class="required">*</span> <?php echo $entry_login; ?></td>
-            <td>Hi This is Archit!<input type="text" name="authorizenet_aim_login" value="<?php echo $authorizenet_aim_login; ?>" />
+            <td><input type="text" name="authorizenet_aim_login" value="<?php echo $authorizenet_aim_login; ?>" />
               <?php if ($error_login) { ?>
               <span class="error"><?php echo $error_login; ?></span>
               <?php } ?></td>
