@@ -11,7 +11,7 @@ About this Implementation
 The Litle Open Cart integration enables processing payments through Litle for all Open Cart users.  
 This allows simple integration with Litle's payment system.
 
-See [Open Cart]("http://www.opencart.com/") for more information.
+See [Litle Developers]("http://www.litle.com/developers") for more information.
 
 
 Setup
@@ -21,9 +21,7 @@ Setup
 
 2) Install VQMOD-2.1.5-opencart. Follow the directions and find the download at  [VQMOD Website]("http://code.google.com/p/vqmod/"). Make sure that all files and folders in VQMOD are read/write enabled or the installation will cause Open Cart to fail.
  
-3) Download the Litle Integration 
-
->git clone git://github.com/LitleCo/litle-integration-open-cart.git
+3) Download the Litle Integration: https://github.com/downloads/LitleCo/litle-integration-open-cart/Litle_Payments-8.10.zip
 
 4) Copy all of the files in the upload directory of litle-integration-open-cart into the root directory of open cart preserving directory structure.
    Note: The simplest way to do this is to select the folders inside the file browser and copy and paste them into the Open Cart root folder. This will copy the new Litle files while preserving the original Open Cart files.
