@@ -6,8 +6,8 @@ About Litle
 [Litle &amp; Co.](http://www.litle.com) powers the payment processing engines for leading companies that sell directly to consumers through  internet retail, direct response marketing (TV, radio and telephone), and online services. Litle & Co. is the leading, independent authority in card-not-present (CNP) commerce, transaction processing and merchant services.
 
 
-About this SDK
---------------
+About this Implementation
+-------------------------
 The Litle Open Cart integration enables processing payments through Litle for all users of Open Cart.  
 This allows simple integration with Litle's payment system.
 
