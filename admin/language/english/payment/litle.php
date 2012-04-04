@@ -34,6 +34,8 @@ $_['merchant_user_name']		 	 = 'User name:<br/><span class="help">This is the us
 $_['merchant_password']		 		 = 'Password:<br/><span class="help">This is the password provided to you when you signed up with Litle.</span>';
 $_['default_report_group']			 = 'Default Report Group:<br/><span class="help">This is the default report group Litle will use for reporting. Please contact Litle for more information.</span>';
 $_['entry_mode']					 = 'URL:';
+$_['litle_proxy']					 = 'Proxy:';
+$_['litle_timeout']					 = 'Timeout:';
 $_['entry_transaction']				 = 'Transaction Method:';
 $_['entry_debug']					 = 'Debug Mode:<br/><span class="help">Logs additional information to the system log.</span>';
 $_['entry_total']                    = 'Total:<br /><span class="help">The checkout total the order must reach before this payment method becomes active.</span>';

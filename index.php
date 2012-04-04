@@ -112,7 +112,7 @@ function error_handler($errno, $errstr, $errfile, $errline) {
 }
 	
 // Error Handler
-//set_error_handler('error_handler');
+set_error_handler('error_handler');
 
 // Request
 $request = new Request();

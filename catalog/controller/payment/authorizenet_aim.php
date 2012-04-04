@@ -89,100 +89,80 @@ class ControllerPaymentAuthorizeNetAim extends Controller {
 			$data['x_test_request'] = 'true';
 		}	
 				
-		//$curl = curl_init($url);
+		$curl = curl_init($url);
 
-		//curl_setopt($curl, CURLOPT_PORT, 443);
-		//curl_setopt($curl, CURLOPT_HEADER, 0);
-		//curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
-		//curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-		//curl_setopt($curl, CURLOPT_FORBID_REUSE, 1);
-		//curl_setopt($curl, CURLOPT_FRESH_CONNECT, 1);
-		//curl_setopt($curl, CURLOPT_POST, 1);
-		//curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
-		//curl_setopt($curl, CURLOPT_TIMEOUT, 10);
-		//curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
+		curl_setopt($curl, CURLOPT_PORT, 443);
+		curl_setopt($curl, CURLOPT_HEADER, 0);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($curl, CURLOPT_FORBID_REUSE, 1);
+		curl_setopt($curl, CURLOPT_FRESH_CONNECT, 1);
+		curl_setopt($curl, CURLOPT_POST, 1);
+		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
+		curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+		curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
  
-		//$response = curl_exec($curl);
+		$response = curl_exec($curl);
 		
 		$json = array();
 		
-// 		if (curl_error($curl)) {
-// 			$json['error'] = 'CURL ERROR: ' . curl_errno($curl) . '::' . curl_error($curl);
+		if (curl_error($curl)) {
+			$json['error'] = 'CURL ERROR: ' . curl_errno($curl) . '::' . curl_error($curl);
 			
-// 			$this->log->write('AUTHNET AIM CURL ERROR: ' . curl_errno($curl) . '::' . curl_error($curl));	
-// 		} elseif ($response) {
-// 			$i = 1;
+			$this->log->write('AUTHNET AIM CURL ERROR: ' . curl_errno($curl) . '::' . curl_error($curl));	
+		} elseif ($response) {
+			$i = 1;
 			
-// 			$response_data = array();
+			$response_data = array();
 			
-// 			$results = explode(',', $response);
+			$results = explode(',', $response);
 			
-// 			foreach ($results as $result) {
-// 				$response_data[$i] = trim($result, '"');
+			foreach ($results as $result) {
+				$response_data[$i] = trim($result, '"');
 				
-// 				$i++;
-// 			}
+				$i++;
+			}
 		
-// 			if ($response_data[1] == '1') {
-// 				if (strtoupper($response_data[38]) != strtoupper(md5($this->config->get('authorizenet_aim_hash') . $this->config->get('authorizenet_aim_login') . $response_data[6] . $this->currency->format($order_info['total'], $order_info['currency_code'], 1.00000, false)))) {
+			if ($response_data[1] == '1') {
+				if (strtoupper($response_data[38]) != strtoupper(md5($this->config->get('authorizenet_aim_hash') . $this->config->get('authorizenet_aim_login') . $response_data[6] . $this->currency->format($order_info['total'], $order_info['currency_code'], 1.00000, false)))) {
 					$this->model_checkout_order->confirm($this->session->data['order_id'], $this->config->get('config_order_status_id'));
 					
 					$message = '';
 					
-// 					if (isset($response_data['5'])) {
-// 						$message .= 'Authorization Code: ' . $response_data['5'] . "\n";
-// 					}
+					if (isset($response_data['5'])) {
+						$message .= 'Authorization Code: ' . $response_data['5'] . "\n";
+					}
 					
-// 					if (isset($response_data['6'])) {
-// 						$message .= 'AVS Response: ' . $response_data['6'] . "\n";
-// 					}
+					if (isset($response_data['6'])) {
+						$message .= 'AVS Response: ' . $response_data['6'] . "\n";
+					}
 			
-// 					if (isset($response_data['7'])) {
-// 						$message .= 'Transaction ID: ' . $response_data['7'] . "\n";
-// 					}
+					if (isset($response_data['7'])) {
+						$message .= 'Transaction ID: ' . $response_data['7'] . "\n";
+					}
 	
-// 					if (isset($response_data['39'])) {
-// 						$message .= 'Card Code Response: ' . $response_data['39'] . "\n";
-// 					}
+					if (isset($response_data['39'])) {
+						$message .= 'Card Code Response: ' . $response_data['39'] . "\n";
+					}
 					
-// 					if (isset($response_data['40'])) {
-// 						$message .= 'Cardholder Authentication Verification Response: ' . $response_data['40'] . "\n";
-// 					}
-
-					//if (isset($response_data['5'])) {
-						$message .= 'Authorization Code: ' . '11111' . "\n";
-					//}
-						
-					//if (isset($response_data['6'])) {
-						$message .= 'AVS Response: ' . '01' . "\n";
-					//}
-						
-					//if (isset($response_data['7'])) {
-						$message .= 'Transaction ID: ' . '111122223333444454' . "\n";
-					//}
-					
-					//if (isset($response_data['39'])) {
-						$message .= 'Card Code Response: ' . '100' . "\n";
-					//}
-						
-					//if (isset($response_data['40'])) {
-						$message .= 'Cardholder Authentication Verification Response: ' . 'M' . "\n";
-					//}				
+					if (isset($response_data['40'])) {
+						$message .= 'Cardholder Authentication Verification Response: ' . $response_data['40'] . "\n";
+					}				
 	
 					$this->model_checkout_order->update($this->session->data['order_id'], $this->config->get('authorizenet_aim_order_status_id'), $message, false);				
-				//}
+				}
 				
 				$json['success'] = $this->url->link('checkout/success', '', 'SSL');
-// 			} else {
-// 				$json['error'] = $response_data[4];
-// 			}
-// 		} else {
-// 			$json['error'] = 'Empty Gateway Response';
+			} else {
+				$json['error'] = $response_data[4];
+			}
+		} else {
+			$json['error'] = 'Empty Gateway Response';
 			
-// 			$this->log->write('AUTHNET AIM CURL ERROR: Empty Gateway Response');
-// 		}
+			$this->log->write('AUTHNET AIM CURL ERROR: Empty Gateway Response');
+		}
 		
-		//curl_close($curl);
+		curl_close($curl);
 		
 		$this->response->setOutput(json_encode($json));
 	}

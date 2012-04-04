@@ -68,6 +68,16 @@
               </select></td>
           </tr>
           <tr>
+            <td><?php echo $litle_proxy; ?></td>
+            <td><input type="text" name="litle_proxy_value" value="<?php echo $litle_proxy_value; ?>" />
+            </td>
+          </tr>
+          <tr>
+            <td><?php echo $litle_timeout; ?></td>
+            <td><input type="text" name="litle_timeout_value" value="<?php echo $litle_timeout_value; ?>" />
+            </td>
+          </tr>
+          <tr>
             <td><?php echo $entry_transaction; ?></td>
             <td><select name="litle_transaction">
                 <?php if ($litle_transaction == "auth") { ?>

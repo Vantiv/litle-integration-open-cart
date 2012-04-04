@@ -1,5 +1,5 @@
 <?php
-require_once($vqmod->modCheck(DIR_SYSTEM . 'library/litle/LitleOnline.php'));
+require_once DIR_SYSTEM . 'library/litle/LitleOnline.php';
 
 class ControllerPaymentLitle extends Controller {
 	protected function index() {
@@ -95,36 +95,36 @@ class ControllerPaymentLitle extends Controller {
 		return $retVal;
 	}
 	
+	public function merchantDataFromOC()
+	{
+		$hash = array('user'=> $this->config->get('litle_merchant_user_name'),
+		 					'password'=> $this->config->get('litle_merchant_password'),
+							'merchantId'=>$this->config->get('litle_merchant_id'),
+							'reportGroup'=>$this->config->get('litle_default_report_group'),
+							'url'=>UrlMapper::getUrl(trim($this->config->get('litle_url'))),	
+							'proxy'=>$this->config->get('litle_proxy_value'),
+							'timeout'=>$this->config->get('litle_timeout_value')
+		);
+		return $hash;
+	}
+	
 	public function send() {
- 		$this->load->model('checkout/order');
+		restore_error_handler();
+		$this->load->model('checkout/order');
  		$order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
-				
+ 		
  		$orderAmountToInsert = $this->getAmountInCorrectFormat($order_info['total']);
- 		$hash_in = array(
+ 		$litle_order_info = array(
  					'orderId'=> $order_info['order_id'],
  					'amount'=> $orderAmountToInsert,
  					'orderSource'=> "ecommerce",
- 					//'customerInfo'=> $order_info['payment_firstname'],
  					'billToAddress'=> $this->getAddressInfo($order_info, "payment"),
  					'shipToAddress'=> $this->getAddressInfo($order_info, "shipping"),
  					'card'=> $this->getCreditCardInfo(),
- 					//'paypal'=> $order_info['payment_firstname'],
- 					//'token'=> $order_info['payment_firstname'],
- 					//'paypage'=> $order_info['payment_firstname'],
- 					//'billMeLaterRequest'=> $order_info['payment_firstname'],
- 					//'cardholderAuthentication'=> $order_info['payment_firstname'],
- 					//'processingInstructions'=> $order_info['payment_firstname'],
- 					//'pos'=>(XMLFields::pos($hash_in['pos'])),
- 					//'customBilling'=>(XMLFields::customBilling($hash_in['customBilling'])),
- 					//'taxBilling'=>(XMLFields::taxBilling($hash_in['taxBilling'])),
- 					//'enhancedData'=>(XMLFields::enhancedData($hash_in['enhancedData'])),
- 					//'amexAggregatorData'=>(XMLFields::amexAggregatorData($hash_in['amexAggregatorData'])),
- 					//'allowPartialAuth'=>$hash_in['allowPartialAuth'],
- 					//'healthcareIIAS'=>(XMLFields::healthcareIIAS($hash_in['healthcareIIAS'])),
- 					//'filtering'=>(XMLFields::filteringType($hash_in['filtering'])),
- 					//'merchantData'=>(XMLFields::filteringType($hash_in['merchantData'])),
- 					//'recyclingRequest'=>(XMLFields::recyclingRequestType($hash_in['recyclingRequest']))
  		);
+ 		
+ 		$hash_in = array_merge($this->merchantDataFromOC(), $litle_order_info);
+ 		
  		$litleResponseMessagePrefix = "";
  		$litleRequest = new LitleOnlineRequest();
  		$doingAuth = $this->config->get('litle_transaction') == "auth";
@@ -167,15 +167,15 @@ class ControllerPaymentLitle extends Controller {
 			$orderStatusId = 8; //Denied
 			$json['error'] = "Either your credit card was declined or there was an error. Try again or contact us for further help.";
 		}
-		
+
 		$this->model_checkout_order->confirm(
 			$order_info['order_id'], 
 			$orderStatusId,
 			$message,
 			true
 		);
-		
 		$this->response->setOutput(json_encode($json));
+		set_error_handler('error_handler');
 	}
 }
 ?>
