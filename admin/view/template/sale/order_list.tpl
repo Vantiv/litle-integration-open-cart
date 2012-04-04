@@ -53,7 +53,6 @@
                 <a href="<?php echo $sort_date_modified; ?>"><?php echo $column_date_modified; ?></a>
                 <?php } ?></td>
               <td class="right"><?php echo $column_action; ?></td>
-              <td class="right"> Litle Actions</td>
             </tr>
           </thead>
           <tbody>
@@ -80,7 +79,6 @@
               <td><input type="text" name="filter_date_added" value="<?php echo $filter_date_added; ?>" size="12" class="date" /></td>
               <td><input type="text" name="filter_date_modified" value="<?php echo $filter_date_modified; ?>" size="12" class="date" /></td>
               <td align="right"><a onclick="filter();" class="button"><?php echo $button_filter; ?></a></td>
-              <td/>
             </tr>
             <?php if ($orders) { ?>
             <?php foreach ($orders as $order) { ?>
@@ -98,9 +96,6 @@
               <td class="left"><?php echo $order['date_modified']; ?></td>
               <td class="right"><?php foreach ($order['action'] as $action) { ?>
                 [ <a href="<?php echo $action['href']; ?>"><?php echo $action['text']; ?></a> ]
-                <?php } ?></td>
-              <td class="right"><?php foreach ($order['litleAction'] as $litleAction) { ?>
-                [ <a href="<?php echo $litleAction['href']; ?>"><?php echo $litleAction['text']; ?></a> ]
                 <?php } ?></td>
             </tr>
             <?php } ?>
