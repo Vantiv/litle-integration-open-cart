@@ -112,9 +112,9 @@ class ControllerPaymentLitle extends Controller {
 		restore_error_handler();
 		$this->load->model('checkout/order');
  		$order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
-				
+ 		
  		$orderAmountToInsert = $this->getAmountInCorrectFormat($order_info['total']);
- 		$order_info = array(
+ 		$litle_order_info = array(
  					'orderId'=> $order_info['order_id'],
  					'amount'=> $orderAmountToInsert,
  					'orderSource'=> "ecommerce",
@@ -122,7 +122,8 @@ class ControllerPaymentLitle extends Controller {
  					'shipToAddress'=> $this->getAddressInfo($order_info, "shipping"),
  					'card'=> $this->getCreditCardInfo(),
  		);
- 		$hash_in = array_merge($this->merchantDataFromOC(), $order_info);
+ 		
+ 		$hash_in = array_merge($this->merchantDataFromOC(), $litle_order_info);
  		
  		$litleResponseMessagePrefix = "";
  		$litleRequest = new LitleOnlineRequest();
@@ -166,7 +167,7 @@ class ControllerPaymentLitle extends Controller {
 			$orderStatusId = 8; //Denied
 			$json['error'] = "Either your credit card was declined or there was an error. Try again or contact us for further help.";
 		}
-		
+
 		$this->model_checkout_order->confirm(
 			$order_info['order_id'], 
 			$orderStatusId,
