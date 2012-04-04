@@ -3,7 +3,7 @@ Litle Open Cart Integration
 
 About Litle
 ------------
-Litle & Co. powers the payment processing engines for leading companies that sell directly to consumers through  internet retail, direct response marketing (TV, radio and telephone), and online services. Litle & Co. is the leading, independent authority in card-not-present (CNP) commerce, transaction processing and merchant services.
+Litle & Co. powers the payment processing engines for leading companies that sell directly to consumers through internet retail, direct response marketing (TV, radio and telephone), and online services. Litle & Co. is the leading, independent authority in card-not-present (CNP) commerce, transaction processing and merchant services.
 
 
 About this Implementation
@@ -11,19 +11,17 @@ About this Implementation
 The Litle Open Cart integration enables processing payments through Litle for all Open Cart users.  
 This allows simple integration with Litle's payment system.
 
-See http://www.opencart.com/ for more information.
+See http://www.litle.com/developers for more information.
 
 
 Setup
 -----
 
-1) To begin you must donwload and install v. 1.5.3.1 of Opencart. Follow the directions and find the download on the http://www.opencart.com/.
+1) To begin you must donwload and install v. 1.5.3.1 of Open Cart. Follow the directions and find the download on the http://www.opencart.com/.
 
 2) Install VQMOD-2.1.5-opencart. Follow the directions and find the download at http://code.google.com/p/vqmod/. Make sure that all files and folders in VQMOD are read/write enabled or the installation will cause Open Cart to fail.
  
-3) Download the Litle Integration 
-
->git clone git://github.com/LitleCo/litle-integration-open-cart.git
+3) Download the Litle Integration : https://github.com/downloads/LitleCo/litle-integration-open-cart/Litle_Payments-8.10.tgz
 
 4) Copy all of the files in the upload directory of litle-integration-open-cart into the root directory of open cart preserving directory structure.
    Note: The simplest way to do this is to select the folders inside the file browser and copy and paste them into the Open Cart root folder. This will copy the new Litle files while preserving the original Open Cart files.
