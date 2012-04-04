@@ -34,7 +34,13 @@ Setup
    Note: For testing purposes please select Sandbox as the URL.
    Note: The only required fields are merchant_ID, username and password, which can be set to anything while using the sandbox.
 
-7) run on front end check on back end
-
+7) Test that the system is working correctly.
+   - proceed to the storefront and checkout. Select Litle Credit Card as the payment method and enter:
+     VI as type
+     4242424242424242 as the number
+     123 as CVV
+     May 2012 as Exp. Date
+ 
+  - after hitting submit, proceed to the admin panel and go to Sales->orders. The new order should be dispayed here as well as the option to capture, reverse and view the auth. Select Capture and a success message should be displayed on the top left of the form. 
 
 Please contact Lilte & Co. with any further questions.   You can reach us at SDKSupport@litle.com
