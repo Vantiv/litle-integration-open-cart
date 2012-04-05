@@ -17,9 +17,9 @@ See [Litle Developers]("http://www.litle.com/developers") for more information.
 Setup
 -----
 
-1) To begin you must donwload and install v. 1.5.3.1 of Opencart. Follow the directions and find the download on the [Open Cart Website]("http://www.opencart.com/").
+1) To begin you must donwload and install v. 1.5.3.1 of Opencart. Follow the directions and find the download on the [Open Cart Website](http://www.opencart.com/).
 
-2) Install VQMOD-2.1.5-opencart. Follow the directions and find the download at  [VQMOD Website]("http://code.google.com/p/vqmod/"). Make sure that all files and folders in VQMOD are read/write enabled or the installation will cause Open Cart to fail.
+2) Install VQMOD-2.1.5-opencart. Follow the directions and find the download at  [VQMOD Website](http://code.google.com/p/vqmod/). Make sure that all files and folders in VQMOD are read/write enabled or the installation will cause Open Cart to fail.
  
 3) Download the Litle Integration: [https://github.com/downloads/LitleCo/litle-integration-open-cart/Litle_Payments-8.10.zip](https://github.com/downloads/LitleCo/litle-integration-open-cart/Litle_Payments-8.10.zip)
 
