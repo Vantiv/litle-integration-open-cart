@@ -30,7 +30,13 @@ class Obj2xml {
 		$config= Obj2xml::getConfig($hash_config);
 		$xml = simplexml_load_string("<?xml version='1.0' encoding='utf-8'?><$rootNodeName />");
 		$xml-> addAttribute('merchantId',$config["merchantId"]);
-		$xml-> addAttribute('version',$config["version"]);
+		$xml-> addAttribute('version','8.17');
+		$xml-> addAttribute('merchantSdk',$data['merchantSdk']);
+		unset($data['merchantSdk']);
+		if(isset($data['loggedInUser'])) {
+			$xml->addAttribute('loggedInUser',$data["loggedInUser"]);
+		};
+		unset($data['loggedInUser']);
 		$xml-> addAttribute('xmlns:xmlns','http://www.litle.com/schema');// does not show up on browser docs
 		$authentication = $xml->addChild('authentication');
 		$authentication->addChild('user',$config["user"]);
@@ -40,16 +46,17 @@ class Obj2xml {
 			($transacType-> addAttribute('partial',$data["partial"]));
 		};
 		unset($data['partial']);
-		#merchant SDK attribute $transacType-> addAttribute('partial',$data["partial"])
-		if(isset($config['customerId'])) {
-			($transacType-> addAttribute('customerId',$config["customerId"]));
+		if(isset($data['customerId'])) {
+			($transacType-> addAttribute('customerId',$data["customerId"]));
 		};
+		unset($data['customerId']);
 		if(isset($config['reportGroup'])) {
 			($transacType-> addAttribute('reportGroup',$config["reportGroup"]));
 		};
-		if(isset($config['id'])) {
-			($transacType-> addAttribute('id',$config["id"]));
+		if(isset($data['id'])) {
+			($transacType-> addAttribute('id',$data["id"]));
 		};
+		unset($data['id']);
 		Obj2xml::iterateChildren($data,$transacType);
 		return $xml->asXML();
 	}
@@ -57,10 +64,16 @@ class Obj2xml {
 	private function iterateChildren($data,$transacType){
 		foreach($data as $key => $value)
 		{
-			if ($value == "REQUIRED"){
-				throw new Exception("Missing Required Field: /$key/");
+			if ($value === "REQUIRED"){
+				throw new InvalidArgumentException("Missing Required Field: /$key/");
+			}elseif (substr($key, 0, 12) === 'lineItemData'){
+				$temp_node = $transacType->addChild('lineItemData');
+				Obj2xml::iterateChildren($value,$temp_node);
+			}elseif (substr($key,0,-1) == 'detailTax'){
+				$temp_node = $transacType->addChild('detailTax');
+				Obj2xml::iterateChildren($value,$temp_node);
 			}elseif (((is_string($value)) || is_numeric($value))) {
-				$transacType->addChild($key,$value);
+				$transacType->addChild($key,str_replace('&','&amp;',$value));
 			}elseif(is_array($value))
 			{
 				$node = $transacType->addChild($key);
@@ -89,7 +102,7 @@ class Obj2xml {
 						$config['timeout'] = isset($config_array['timeout'])? $config_array['timeout']:'65';
 				}else {
 					if ((!isset($config_array[$name])) and ($name != 'proxy')){
-						throw new Exception("Missing Field /$name/");
+						throw new InvalidArgumentException("Missing Field /$name/");
 					}
 					$config[$name] = $config_array[$name];
 				}

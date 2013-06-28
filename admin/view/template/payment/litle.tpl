@@ -60,10 +60,10 @@
                 <?php } else { ?>
                 <option value="cert"><?php echo $text_cert; ?></option>
                 <?php } ?>
-                <?php if ($litle_url == "production") { ?>
-                <option value="production" selected="selected"><?php echo $text_production; ?></option>
+                <?php if ($litle_url == "production1") { ?>
+                <option value="production1" selected="selected"><?php echo $text_production; ?></option>
                 <?php } else { ?>
-                <option value="production"><?php echo $text_production; ?></option>
+                <option value="production1"><?php echo $text_production; ?></option>
                 <?php } ?>
               </select></td>
           </tr>

@@ -107,7 +107,27 @@ class ControllerPaymentLitle extends Controller {
 		);
 		return $hash;
 	}
-	
+
+/*	
++-----------------+-------------+-------------------+
+| order_status_id | language_id | name              |
++-----------------+-------------+-------------------+
+|               1 |           1 | Pending           | 
+|               2 |           1 | Processing        | 
+|               3 |           1 | Shipped           | 
+|               5 |           1 | Complete          | 
+|               7 |           1 | Canceled          | 
+|               8 |           1 | Denied            | we use this for soft decline, hard decline and config issues
+|               9 |           1 | Canceled Reversal | 
+|              10 |           1 | Failed            |
+|              11 |           1 | Refunded          | 
+|              12 |           1 | Reversed          | 
+|              13 |           1 | Chargeback        | 
+|              15 |           1 | Processed         | 
+|              14 |           1 | Expired           | 
+|              16 |           1 | Voided            | 
++-----------------+-------------+-------------------+
+*/
 	public function send() {
 		restore_error_handler();
 		$this->load->model('checkout/order');
@@ -126,22 +146,62 @@ class ControllerPaymentLitle extends Controller {
  		$hash_in = array_merge($this->merchantDataFromOC(), $litle_order_info);
  		
  		$litleResponseMessagePrefix = "";
- 		$litleRequest = new LitleOnlineRequest();
+ 		$litleRequest = new LitleOnlineRequest($treeResponse=true);
  		$doingAuth = $this->config->get('litle_transaction') == "auth";
 		if($doingAuth) {
 			//auth txn
 			$response = $litleRequest->authorizationRequest($hash_in);
 			$litleResponseMessagePrefix = "LitleAuthTxn: ";
+			$code = strval($response->authorizationResponse->response);
+			$litleTxnId = strval($response->authorizationResponse->litleTxnId);
+			$avsResponse = strval($response->authorizationResponse->fraudResult->avsResult);
+			$cvvResponse = strval($response->authorizationResponse->fraudResult->cardValidationResult);
+			$authCode = strval($response->authorizationResponse->authCode);
 		}
 		else {
 			//sale txn
 			$response = $litleRequest->saleRequest($hash_in);
-			$litleResponseMessagePrefix = "LitleCaptureTxn: ";
+			$litleResponseMessagePrefix = "LitleSaleTxn: ";
+			$code = strval($response->saleResponse->response);
+			$litleTxnId = strval($response->saleResponse->litleTxnId);
+            $avsResponse = strval($response->saleResponse->fraudResult->avsResult);
+            $cvvResponse = strval($response->saleResponse->fraudResult->cardValidationResult);
+            $authCode = strval($response->saleResponse->authCode);
 		}
+		$cvvResponseMap = array(
+                "M"=>"Match",
+                "N"=>"No Match",
+                "P"=>"Not Processed",
+                "S"=>"CVV2/CVC2/CID should be on the card, but the merchant has indicated CVV2/CVC2/CID is not present",
+                "U"=>"Issuer is not certified for CVV2/CVC2/CID processing",
+                ""=>"Check was not done for an unspecified reason"
+        );
+        $cvvResponse = $cvvResponse . " - " . $cvvResponseMap[$cvvResponse];
+		$avsResponseMap = array(
+            "00" => "5-Digit zip and address match",
+            "01" => "9-Digit zip and address match",
+            "02" => "Postal code and address match",
+            "10" => "5-Digit zip matches, address does not match",
+            "11" => "9-Digit zip matches, address does not match",
+            "12" => "Zip does not match, address matches",
+            "13" => "Postal code does not match, address matches",
+            "14" => "Postal code matches, address not verified",
+            "20" => "Neither zip nor address match",
+            "30" => "AVS service not supported by issuer",
+            "31" => "AVS system not available",
+            "32" => "Address unavailable",
+            "33" => "General error",
+            "34" => "AVS not performed",
+            "40" => "Address failed Litle & Co. edit checks"
+		);
+		$avsResponse = $avsResponse . " - " . $avsResponseMap[$avsResponse];  
 		
-		$code = XMLParser::getNode($response, "response");
-		$litleValidationMessage = XMLParser::getNode($response, "message");
-		$litleTxnId = XMLParser::getNode($response, "litleTxnId");
+		
+		$litleValidationMessage = $response->message;
+		
+		$softDeclineCodes = array("100","101","102","110","120","349","350","356","368","372","601","602");
+		$genericErrorSoftDecline = "This method of payment has been declined.  Please try another method of payment or contact us for further help";
+		$genericErrorHardDecline = "This method of payment has been declined.  Please try another method of payment or contact us for further help";
 		
 		$json = array();
 		if($code == "000") { //Success
@@ -149,31 +209,49 @@ class ControllerPaymentLitle extends Controller {
 				$orderStatusId = 1; //Pending
 			}
 			else {
-				$orderStatusId = 5; //Processing
+				$orderStatusId = 2; //Processing
 			}
-			$message = $litleResponseMessagePrefix . $litleValidationMessage . " \n Litle Response Code: " . $code . "\n  Litle Transaction ID: " . $litleTxnId . " \n";
+			$message = "Approval\n" . $litleResponseMessagePrefix . $litleValidationMessage . " \n Litle Response Code: " . $code . "\n  Litle Transaction ID: " . $litleTxnId . " \nAVS Response: " . $avsResponse . "\nCard Validation Response: " . $cvvResponse . "\nAuthCode: " . $authCode;
 			$json['success'] = $this->url->link('checkout/success', '', 'SSL');
+            $this->model_checkout_order->confirm(
+                $order_info['order_id'], 
+                $orderStatusId,
+                $message,
+                true
+            );
 		}
-		else if($code == "100" || $code == "101" || $code == "102" || $code == "110"){ //Need to try again
-			$orderStatusId = 10; //Failed
-			$litleResponseMessagePrefix = "LitleTxn: ";
-			$message = $litleResponseMessagePrefix . $litleValidationMessage . " \n Litle Response Code: " . $code . "\n  Litle Transaction ID: " . $litleTxnId . " \n";
-			$json['error'] = "Either your credit card was declined or there was an error. Try again or contact us for further help.";
+		else if(in_array($code, $softDeclineCodes)){ //Soft decline
+			$orderStatusId = 8; //Denied
+            $message = "Soft Decline\n" . $litleResponseMessagePrefix . $litleValidationMessage . " \n Litle Response Code: " . $code . "\n  Litle Transaction ID: " . $litleTxnId . " \nAVS Response: " . $avsResponse . "\nCard Validation Response: " . $cvvResponse . "\nAuthCode: " . $authCode;
+			$json['error'] = $genericErrorSoftDecline;
+            $this->model_checkout_order->update(
+                $order_info['order_id'], 
+                $orderStatusId,
+                $message,
+                false
+            );
 		}
 		else {
-			$xpath = new DOMXPath($response);
-			$query = 'string(/litleOnlineResponse/@message)';
-			$message = $xpath->evaluate($query);
-			$orderStatusId = 8; //Denied
-			$json['error'] = "Either your credit card was declined or there was an error. Try again or contact us for further help.";
+		    //Do we have a code, if so, hard decline
+		    $orderStatusId = 8; //Denied
+		    $json['error'] = $genericErrorHardDecline;
+		    if(!empty($code)) {
+                $message = $litleResponseMessagePrefix . $litleValidationMessage . " \n Litle Response Code: " . $code . "\n  Litle Transaction ID: " . $litleTxnId . " \nAVS Response: " . $avsResponse . "\nCard Validation Response: " . $cvvResponse . "\nAuthCode: " . $authCode;
+			}
+			else { //The xml is invalid, incorrect username/password, or other configuration error
+			    //scrub the card number and password
+                $hash_in['password'] = preg_replace("/./", "*", $hash_in['password']);
+                $hash_in['card']['number'] = preg_replace("/./","*",$hash_in['card']['number'],strlen($hash_in['card']['number'])-4);
+			    $message = "The xml sent to Litle failed.\nRequest XML:\n" . print_r($hash_in, TRUE) . "\nResponse XML:\n" . htmlentities($response->asXML());
+			}
+            $this->model_checkout_order->update(
+                $order_info['order_id'], 
+                $orderStatusId,
+                $message,
+                false
+            );
 		}
 
-		$this->model_checkout_order->confirm(
-			$order_info['order_id'], 
-			$orderStatusId,
-			$message,
-			true
-		);
 		$this->response->setOutput(json_encode($json));
 		set_error_handler('error_handler');
 	}
