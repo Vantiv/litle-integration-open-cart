@@ -304,7 +304,7 @@ class ControllerPaymentLitle extends Controller {
 
 		$merchantConfig = $this->merchantDataFromOC();
 		$litleRequest = new LitleOnlineRequest($treeResponse=true);
-		
+
 		// Refunds
 		if($typeOfTransaction == "Refund")
 		{
@@ -314,14 +314,14 @@ class ControllerPaymentLitle extends Controller {
 			$code = strval($response->creditResponse->response);
 			$responseMessage = strval($response->creditResponse->message);
 			$litleTxnId = strval($response->creditResponse->litleTxnId);
-			$comment = "LitleRefundTxn:\nLitle Response Code: " . $code . "\nLitle Transaction ID: " . $litleTxnId . "\nLitle Message: " . $responseMessage;
+			$comment = $this->generateComment($typeOfTransaction, $code, $litleTxnId, $responseMessage);
 			if($code == "000") {
-			    $data = array('order_status_id'=>11,'comment'=>$comment); //Refunded			                
+			    $data = array('order_status_id'=>11,'comment'=>$comment,'notify'=>false); //Refunded			                
                 $this->model_sale_order->addOrderHistory($order_id, $data);
 			}
 			else {
 			    $this->error['warning'] = $comment;
-                $data = array('order_status_id'=>$latest_order_status_id,'comment'=>$comment); //Don't change the status                            
+                $data = array('order_status_id'=>$latest_order_status_id,'comment'=>$comment,'notify'=>false); //Don't change the status                            
                 $this->model_sale_order->addOrderHistory($order_id, $data);
 			}
 		}
@@ -333,18 +333,18 @@ class ControllerPaymentLitle extends Controller {
             $code = strval($response->captureResponse->response);
             $responseMessage = strval($response->captureResponse->message);
             $litleTxnId = strval($response->captureResponse->litleTxnId);
-            $comment = "LitleCaptureTxn:\nLitle Response Code: " . $code . "\nLitle Transaction ID: " . $litleTxnId . "\nLitle Message: " . $responseMessage;
+            $comment = $this->generateComment($typeOfTransaction, $code, $litleTxnId, $responseMessage);
             if($code == "000") {
-                $data = array('order_status_id'=>2,'comment'=>$comment); //Processing                            
+                $data = array('order_status_id'=>2,'comment'=>$comment,'notify'=>false); //Processing                            
                 $this->model_sale_order->addOrderHistory($order_id, $data);
             }
             else {
                 $this->error['warning'] = $comment;
-                $data = array('order_status_id'=>$latest_order_status_id,'comment'=>$comment); //Don't change the status                            
+                $data = array('order_status_id'=>$latest_order_status_id,'comment'=>$comment,'notify'=>false); //Don't change the status                            
                 $this->model_sale_order->addOrderHistory($order_id, $data);
             }
         }
-        else if($typeOfTransaction == "Capture")
+        else if($typeOfTransaction == "AuthReversal")
         {
             $litleTextToLookFor = $this->language->get('text_litle_capture_txn');
             $hash_in = array_merge($merchantConfig, $this->getHashInWithLitleTxnId("Litle Transaction ID:"));
@@ -352,45 +352,18 @@ class ControllerPaymentLitle extends Controller {
             $code = strval($response->authReversalResponse->response);
             $responseMessage = strval($response->authReversalResponse->message);
             $litleTxnId = strval($response->authReversalResponse->litleTxnId);
-            $comment = "LitleCaptureTxn:\nLitle Response Code: " . $code . "\nLitle Transaction ID: " . $litleTxnId . "\nLitle Message: " . $responseMessage;
+            $comment = $this->generateComment($typeOfTransaction, $code, $litleTxnId, $responseMessage);
             if($code == "000") {
-                $data = array('order_status_id'=>2,'comment'=>$comment); //Processing                            
+                $data = array('order_status_id'=>2,'comment'=>$comment,'notify'=>false); //Processing                            
                 $this->model_sale_order->addOrderHistory($order_id, $data);
             }
             else {
                 $this->error['warning'] = $comment;
-                $data = array('order_status_id'=>$latest_order_status_id,'comment'=>$comment); //Don't change the status                            
+                $data = array('order_status_id'=>$latest_order_status_id,'comment'=>$comment,'notify'=>false); //Don't change the status                            
                 $this->model_sale_order->addOrderHistory($order_id, $data);
             }
         }
-		if( isset($response))
-		{
-			$code = XMLParser::getNode($litleResponse,'response');
-			if($litleResponseCode != "000")
-			{
-				$order_status_id = 1;
-				if( $latest_order_history ){
-					$order_status_id = $latest_order_history[(count($latest_order_history)-1)]['order_status_id'];
-				}
-				$this->error['warning'] = "There was an error processing requested transaction. Please try again or contact Litle.";
-			}
 			
-			$this->session->data['success'] = "Litle " . $successMessageString . " Transaction Successful!";
-			
-			$comment = $litleTxtToInsertInComment . ": " . XMLParser::getNode($litleResponse,'message') . " \n ". $this->language->get('text_litle_response_code') . " " . $litleResponseCode . "\n ". $this->language->get('text_litle_transaction_id'). " " . XMLParser::getNode($litleResponse,'litleTxnId');
-			
-			$data = array(
-						'order_status_id'=>$order_status_id,
-						'comment'=>$comment
-			);
-				
-			$this->model_sale_order->addOrderHistory($order_id, $data);
-		}
-		else {
-			$this->error['warning'] = "There was an error processing requested transaction. Please try again or contact Litle.";
-		}
-		
-*/		
 		if (isset($this->error['warning'])) {
 			$this->session->data['litle_warning'] = $this->error['warning'];
 		}
@@ -407,16 +380,12 @@ class ControllerPaymentLitle extends Controller {
 		$this->makeTheTransaction("Refund");
 	}
 
-	public function reauthorize() {
-		$this->makeTheTransaction("ReAuthorize");
-	}
-	
 	public function authReversal() {
 		$this->makeTheTransaction("AuthReversal");
 	}
 	
-	public function voidTxn() {
-		$this->makeTheTransaction("VoidTxn");
+	private function generateComment($transactionType, $responseCode, $litleTxnId, $responseMessage) {
+	   return "Litle".$transactionType."Txn\nLitle Message: " . $responseMessage . "\nLitle Response Code: " . $responseCode . "\nLitle Transaction ID: " . $litleTxnId;
 	}
 }
 ?>

@@ -17,11 +17,11 @@ See http://www.litle.com/developers for more information.
 Setup
 -----
 
-1) To begin you must donwload and install v. 1.5.3.1 of Open Cart. Follow the directions and find the download on the http://www.opencart.com/.
+1) To begin you must download and install v. 1.5.5.1 of Open Cart. Follow the directions and find the download on the http://www.opencart.com/.
 
-2) Install VQMOD-2.1.5-opencart. Follow the directions and find the download at http://code.google.com/p/vqmod/. Make sure that all files and folders in VQMOD are read/write enabled or the installation will cause Open Cart to fail.
+2) Install VQMOD-2.3.2-opencart. Follow the directions and find the download at http://code.google.com/p/vqmod/. Make sure that all files and folders in VQMOD are read/write enabled or the installation will cause Open Cart to fail.
  
-3) Download the Litle Integration : https://github.com/downloads/LitleCo/litle-integration-open-cart/Litle_Payments-8.10.zip
+3) Download the Litle Integration : http://www.opencart.com/index.php?route=extension/extension/info&extension_id=5816&filter_search=litle
 
 4) Copy all of the files in the upload directory of litle-integration-open-cart into the root directory of open cart preserving directory structure.
    Note: The simplest way to do this is to select the folders inside the file browser and copy and paste them into the Open Cart root folder. This will copy the new Litle files while preserving the original Open Cart files.

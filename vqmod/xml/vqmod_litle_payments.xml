@@ -1,7 +1,7 @@
 <modification>
 	<id>Litle Payments</id>
-	<version>8.10</version>
-	<vqmver>2.1.5</vqmver>
+	<version>8.17</version>
+	<vqmver>2.3.2</vqmver>
 	<author>www.litle.com/developers</author>
 	<file name="admin/controller/sale/order.php">
 	    <operation>

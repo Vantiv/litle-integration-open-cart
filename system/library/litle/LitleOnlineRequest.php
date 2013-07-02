@@ -352,12 +352,7 @@ class LitleOnlineRequest
 	
 	private function getOptionalAttributes($hash_in,$hash_out)
 	{
-		if(isset($hash_in['merchantSdk'])) {
-			$hash_out['merchantSdk'] = XmlFields::returnArrayValue($hash_in,'merchantSdk');
-		}
-		else {
-			$hash_out['merchantSdk'] = 'PHP;8.17.0';
-		}
+		$hash_out['merchantSdk'] = 'Opencart;8.17.0';
 		if(isset($hash_in['id'])) {
 			$hash_out['id'] = XmlFields::returnArrayValue($hash_in,'id');
 		}
