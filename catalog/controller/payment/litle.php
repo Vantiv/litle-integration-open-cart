@@ -129,10 +129,9 @@ class ControllerPaymentLitle extends Controller {
 +-----------------+-------------+-------------------+
 */
 	public function send() {
-		restore_error_handler();
 		$this->load->model('checkout/order');
- 		$order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
- 		
+		$orderId = $this->session->data['order_id'];
+ 		$order_info = $this->model_checkout_order->getOrder($orderId);
  		$orderAmountToInsert = $this->getAmountInCorrectFormat($order_info['total']);
  		$litle_order_info = array(
  					'orderId'=> $order_info['order_id'],
@@ -168,6 +167,7 @@ class ControllerPaymentLitle extends Controller {
             $cvvResponse = strval($response->saleResponse->fraudResult->cardValidationResult);
             $authCode = strval($response->saleResponse->authCode);
 		}
+		
 		$cvvResponseMap = array(
                 "M"=>"Match",
                 "N"=>"No Match",
@@ -194,8 +194,9 @@ class ControllerPaymentLitle extends Controller {
             "34" => "AVS not performed",
             "40" => "Address failed Litle & Co. edit checks"
 		);
-		$avsResponse = $avsResponse . " - " . $avsResponseMap[$avsResponse];  
-		
+		if(array_key_exists($avsResponse, $avsResponseMap)) {
+			$avsResponse = $avsResponse . " - " . $avsResponseMap[$avsResponse];
+		}  
 		
 		$litleValidationMessage = $response->message;
 		
@@ -253,7 +254,6 @@ class ControllerPaymentLitle extends Controller {
 		}
 
 		$this->response->setOutput(json_encode($json));
-		set_error_handler('error_handler');
 	}
 }
 ?>

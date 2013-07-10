@@ -1,4 +1,9 @@
 <?php
+
+if(!defined("UNIT_TESTING")) {
+	define("UNIT_TESTING",false);
+}
+
 require_once DIR_SYSTEM . 'library/litle/LitleOnline.php';
 
 class ControllerPaymentLitle extends Controller {
@@ -198,7 +203,7 @@ class ControllerPaymentLitle extends Controller {
 		);
 
 		$this->response->setOutput($this->render());
-		set_error_handler('error_handler');
+		//set_error_handler('error_handler');
 	}
 
 	private function validate() {
@@ -292,7 +297,6 @@ class ControllerPaymentLitle extends Controller {
 */
 	public function makeTheTransaction($typeOfTransaction)
 	{
-		restore_error_handler();
 		$this->load->language('payment/litle');
 		
 		$order_id = $this->request->get['order_id'];
@@ -300,7 +304,8 @@ class ControllerPaymentLitle extends Controller {
 		$this->load->model('sale/order');
 		$total_order_histories = $this->model_sale_order->getTotalOrderHistories($order_id);
 		$latest_order_history = $this->model_sale_order->getOrderHistories($order_id, 0, $total_order_histories);
-		$latest_order_status_id = $latest_order_history[0]['order_status_id'];
+		$order = $this->model_sale_order->getOrder($order_id);
+		$latest_order_status_id = $order['order_status_id'];
 
 		$merchantConfig = $this->merchantDataFromOC();
 		$litleRequest = new LitleOnlineRequest($treeResponse=true);
@@ -315,7 +320,7 @@ class ControllerPaymentLitle extends Controller {
 			$responseMessage = strval($response->creditResponse->message);
 			$litleTxnId = strval($response->creditResponse->litleTxnId);
 			$comment = $this->generateComment($typeOfTransaction, $code, $litleTxnId, $responseMessage);
-			if($code == "000") {
+			if($code == "000" || $code == "311" || $code == "316") {
 			    $data = array('order_status_id'=>11,'comment'=>$comment,'notify'=>false); //Refunded			                
                 $this->model_sale_order->addOrderHistory($order_id, $data);
 			}
@@ -354,7 +359,11 @@ class ControllerPaymentLitle extends Controller {
             $litleTxnId = strval($response->authReversalResponse->litleTxnId);
             $comment = $this->generateComment($typeOfTransaction, $code, $litleTxnId, $responseMessage);
             if($code == "000") {
-                $data = array('order_status_id'=>2,'comment'=>$comment,'notify'=>false); //Processing                            
+                $data = array('order_status_id'=>12,'comment'=>$comment,'notify'=>false); //Reversed                            
+                $this->model_sale_order->addOrderHistory($order_id, $data);
+            }
+            else if($code == "306") {
+                $data = array('order_status_id'=>14,'comment'=>$comment,'notify'=>false); //Expired                            
                 $this->model_sale_order->addOrderHistory($order_id, $data);
             }
             else {
@@ -367,10 +376,26 @@ class ControllerPaymentLitle extends Controller {
 		if (isset($this->error['warning'])) {
 			$this->session->data['litle_warning'] = $this->error['warning'];
 		}
-		set_error_handler('error_handler');
-		$this->redirect($this->url->link('sale/order', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+		
+		if (isset($this->session->data['token'])) {
+			$this->redirect(HTTPS_SERVER . 'index.php?route=sale/order&token=' . $this->session->data['token']);
+		} else {
+			$this->redirect(HTTPS_SERVER . 'index.php?route=sale/order');
+		}
 	}
 	
+	private $unit_redirect_args = array();
+	protected function redirect($url, $status = 302) {
+		if(!UNIT_TESTING) {
+			parent::redirect($url, $status);
+		}
+		else {
+			$this->unit_redirect_args = array('url'=>$url, 'status'=>$status);
+		}
+	}
+	public function getRedirectArgs() {
+		return $this->unit_redirect_args;
+	}
 	
 	public function capture() {
 		$this->makeTheTransaction("Capture");
