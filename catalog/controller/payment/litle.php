@@ -61,7 +61,7 @@ class ControllerPaymentLitle extends Controller {
  		$retArray["addressLine1"] = XMLFields::returnArrayValue($order_info, ($addressType . "_address_1") );
  		$retArray["addressLine2"] = XMLFields::returnArrayValue($order_info, ($addressType . "_address_2") );
  		$retArray["city"] = XMLFields::returnArrayValue($order_info, ($addressType . "_city") );
- 		$retArray["state"] = XMLFields::returnArrayValue($order_info, ($addressType . "_firstname") );
+ 		$retArray["state"] = XMLFields::returnArrayValue($order_info, ($addressType . "_zone") );
  		$retArray["zip"] = XMLFields::returnArrayValue($order_info, ($addressType . "_postcode") );
  		//$retArray["country"] = XMLFields::returnArrayValue($order_info, ($addressType . "_country") );
  		$retArray["country"] = XMLFields::returnArrayValue($order_info, ($addressType . "_iso_code_2") );
