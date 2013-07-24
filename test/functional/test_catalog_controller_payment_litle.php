@@ -68,4 +68,15 @@ class LitlePaymentControllerTest extends OpenCartTest
 		$this->assertEquals("1", $orderHistory['notify']);
 	}
 	
+	// https://github.com/LitleCo/litle-integration-open-cart/pull/2
+	function test_getAddressInfo_shouldReturnZoneForState()
+	{
+		$controller = $this->loadControllerByRoute("payment/litle");
+		
+		$orderInfo = array("billing_zone" => "MA", "billing_firstname" => "Greg");
+		
+		$whatToSendToLitle = $controller->getAddressInfo($orderInfo, "billing");
+		$this->assertEquals("MA", $whatToSendToLitle['state']);
+	}
+	
 }
