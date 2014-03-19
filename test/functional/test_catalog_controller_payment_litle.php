@@ -32,12 +32,12 @@ require_once realpath(dirname(__FILE__)) . "/OpenCartTest.php";
 class LitlePaymentControllerTest extends OpenCartTest
 {
 	public function setUp() {
-		system("mysql -u root opencart1551 < " . dirname(__FILE__) . "/cleanup.sql");
+		system("mysql -u root opencart1561 < " . dirname(__FILE__) . "/cleanup.sql");
 	}
 	
 	function test_successful_checkout()
 	{
-		system("mysql -u root opencart1551 < " . dirname(__FILE__) . "/loadOrderForCheckout.sql");
+		system("mysql -u root opencart1561 < " . dirname(__FILE__) . "/loadOrderForCheckout.sql");
 		
 		$order_id = 1000;
 				
