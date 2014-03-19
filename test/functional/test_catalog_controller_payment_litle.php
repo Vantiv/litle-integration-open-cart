@@ -29,6 +29,11 @@ if(!defined("UNIT_TESTING")) {
 
 require_once realpath(dirname(__FILE__)) . "/OpenCartTest.php";
 
+class MockOpenBay{
+function orderNew($var){
+ }
+}
+
 class LitlePaymentControllerTest extends OpenCartTest
 {
 	public function setUp() {
@@ -56,9 +61,13 @@ class LitlePaymentControllerTest extends OpenCartTest
  		$this->request->post['cc_number'] = '4100000000000001';
  		$this->request->post['cc_type'] = 'VI';
 		
+
+                $this->load->model('checkout/order');
+                $checkoutOrder = $this->model_checkout_order;
+                $checkoutOrder->openbay=new MockOpenBay();
+
 		$controller->send();
 		
-		$this->load->model('checkout/order');
 		$order = $this->model_checkout_order->getOrder($order_id);
 		$latest_order_status_id = $order['order_status_id'];
 		$this->assertEquals(1, $latest_order_status_id);
