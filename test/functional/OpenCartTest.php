@@ -1,7 +1,7 @@
 <?php
 
 // TODO: check for a better way to get the root of the opencart installation
-define ( 'OC_ROOT', '/var/www/html/opencart-1.5.6.1/upload/' );
+define ( 'OC_ROOT', "/var/www/html/" . getenv('OPENCART_VERSION'); .  "/upload/" );
 class OpenCartTest extends PHPUnit_Framework_TestCase {
 	protected $registry;
 	protected $front;

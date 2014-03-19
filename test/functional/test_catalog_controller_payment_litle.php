@@ -32,12 +32,18 @@ require_once realpath(dirname(__FILE__)) . "/OpenCartTest.php";
 class LitlePaymentControllerTest extends OpenCartTest
 {
 	public function setUp() {
+                if(getenv('OPENCART_VERSION') == 'opencart-1.5.6.1')  
 		system("mysql -u root opencart1561 < " . dirname(__FILE__) . "/cleanup.sql");
+                if(getenv('OPENCART_VERSION') == 'opencart-1.5.5.1')  
+		system("mysql -u root opencart1551 < " . dirname(__FILE__) . "/cleanup.sql");
 	}
 	
 	function test_successful_checkout()
-	{
+	{       if(getenv('OPENCART_VERSION') == 'opencart-1.5.6.1')  
 		system("mysql -u root opencart1561 < " . dirname(__FILE__) . "/loadOrderForCheckout.sql");
+ 
+                if(getenv('OPENCART_VERSION') == 'opencart-1.5.5.1')  
+		system("mysql -u root opencart1551 < " . dirname(__FILE__) . "/loadOrderForCheckout.sql");
 		
 		$order_id = 1000;
 				
@@ -58,7 +64,7 @@ class LitlePaymentControllerTest extends OpenCartTest
 		$this->assertEquals(1, $latest_order_status_id);
 
 		$output = $this->getOutput();
-		$this->assertEquals('{"success":"http:\/\/sdk2\/opencart-1.5.6.1\/upload\/index.php?route=checkout\/success"}', $output);
+		$this->assertEquals('{"success":"http:\/\/sdk2\/ ' . getenv('OPENCART_VERSION'); . '\/upload\/index.php?route=checkout\/success"}', $output);
 		
 		$this->load->model('account/order');
 		$orderHistories = $this->model_account_order->getOrderHistories($order_id);
