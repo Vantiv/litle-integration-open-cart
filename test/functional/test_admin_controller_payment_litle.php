@@ -46,7 +46,7 @@ class LitlePaymentControllerAdminTest extends OpenCartTest
 		
 		$controller->authReversal();
 		$redirectArgs = $controller->getRedirectArgs();
-		$this->assertEquals("http://localhost/opencart-1.5.5.1/upload/admin/index.php?route=sale/order",$redirectArgs['url']);
+		$this->assertEquals("http://sdk2/opencart-1.5.5.1/upload/admin/index.php?route=sale/order",$redirectArgs['url']);
 		$this->assertEquals(302,$redirectArgs['status']);
 		$this->load->model('sale/order');
 		$order = $this->model_sale_order->getOrder($order_id);
