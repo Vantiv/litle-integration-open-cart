@@ -58,7 +58,7 @@ class LitlePaymentControllerTest extends OpenCartTest
 		$this->assertEquals(1, $latest_order_status_id);
 
 		$output = $this->getOutput();
-		$this->assertEquals('{"success":"http:\/\/localhost\/opencart-1.5.5.1\/upload\/index.php?route=checkout\/success"}', $output);
+		$this->assertEquals('{"success":"http:\/\/sdk2\/opencart-1.5.5.1\/upload\/index.php?route=checkout\/success"}', $output);
 		
 		$this->load->model('account/order');
 		$orderHistories = $this->model_account_order->getOrderHistories($order_id);
