@@ -32,12 +32,21 @@ require_once realpath(dirname(__FILE__)) . "/OpenCartTest.php";
 class LitlePaymentControllerAdminTest extends OpenCartTest
 {
 	public function setUp() {
+                if(getenv('OPENCART_VERSION') == 'opencart-1.5.6.1')  
+		system("mysql -u root opencart1561 < " . dirname(__FILE__) . "/cleanup.sql");
+                if(getenv('OPENCART_VERSION') == 'opencart-1.5.5.1')  
 		system("mysql -u root opencart1551 < " . dirname(__FILE__) . "/cleanup.sql");
 	}
 	
 	function test_successful_authReversal()
-	{
+	{       
+
+                if(getenv('OPENCART_VERSION') == 'opencart-1.5.6.1')  
+		system("mysql -u root opencart1561 < " . dirname(__FILE__) . "/loadSuccessfulAuth.sql");
+ 
+                if(getenv('OPENCART_VERSION') == 'opencart-1.5.5.1')  
 		system("mysql -u root opencart1551 < " . dirname(__FILE__) . "/loadSuccessfulAuth.sql");
+
 		$order_id = 1000;
 				
 		$controller = $this->loadControllerByRoute("payment/litle");
@@ -46,7 +55,7 @@ class LitlePaymentControllerAdminTest extends OpenCartTest
 		
 		$controller->authReversal();
 		$redirectArgs = $controller->getRedirectArgs();
-		$this->assertEquals("http://sdk2/opencart-1.5.5.1/upload/admin/index.php?route=sale/order",$redirectArgs['url']);
+		$this->assertEquals("http://sdk2/" . getenv('OPENCART_VERSION') . "/upload/admin/index.php?route=sale/order",$redirectArgs['url']);
 		$this->assertEquals(302,$redirectArgs['status']);
 		$this->load->model('sale/order');
 		$order = $this->model_sale_order->getOrder($order_id);
@@ -56,7 +65,13 @@ class LitlePaymentControllerAdminTest extends OpenCartTest
 	
 	function test_expiredAuth_authReversal()
 	{
+
+                if(getenv('OPENCART_VERSION') == 'opencart-1.5.6.1')  
+		system("mysql -u root opencart1561 < " . dirname(__FILE__) . "/loadExpiredAuth.sql");
+ 
+                if(getenv('OPENCART_VERSION') == 'opencart-1.5.5.1')  
 		system("mysql -u root opencart1551 < " . dirname(__FILE__) . "/loadExpiredAuth.sql");
+
 		$order_id = 1000;
 	
 		$controller = $this->loadControllerByRoute("payment/litle");
@@ -65,7 +80,7 @@ class LitlePaymentControllerAdminTest extends OpenCartTest
 	
 		$controller->authReversal();
 		$redirectArgs = $controller->getRedirectArgs();
-		$this->assertEquals("http://sdk2/opencart-1.5.5.1/upload/admin/index.php?route=sale/order",$redirectArgs['url']);
+		$this->assertEquals("http://sdk2/" . getenv('OPENCART_VERSION') . "/upload/admin/index.php?route=sale/order",$redirectArgs['url']);
 		$this->assertEquals(302,$redirectArgs['status']);
 		$this->load->model('sale/order');
 		$order = $this->model_sale_order->getOrder($order_id);
@@ -75,6 +90,11 @@ class LitlePaymentControllerAdminTest extends OpenCartTest
 	
 	function test_successful_capture()
 	{
+
+                if(getenv('OPENCART_VERSION') == 'opencart-1.5.6.1')  
+		system("mysql -u root opencart1561 < " . dirname(__FILE__) . "/loadSuccessfulCapture.sql");
+ 
+                if(getenv('OPENCART_VERSION') == 'opencart-1.5.5.1')  
 		system("mysql -u root opencart1551 < " . dirname(__FILE__) . "/loadSuccessfulCapture.sql");
 		$order_id = 1000;
 	
@@ -84,7 +104,7 @@ class LitlePaymentControllerAdminTest extends OpenCartTest
 	
 		$controller->refund();
 		$redirectArgs = $controller->getRedirectArgs();
-		$this->assertEquals("http://sdk2/opencart-1.5.5.1/upload/admin/index.php?route=sale/order",$redirectArgs['url']);
+		$this->assertEquals("http://sdk2/" . getenv('OPENCART_VERSION') . "/upload/admin/index.php?route=sale/order",$redirectArgs['url']);
 		$this->assertEquals(302,$redirectArgs['status']);
 		$this->load->model('sale/order');
 		$order = $this->model_sale_order->getOrder($order_id);
@@ -94,6 +114,11 @@ class LitlePaymentControllerAdminTest extends OpenCartTest
 	
 	function test_refund_chargebackAlreadyExists()
 	{
+
+                if(getenv('OPENCART_VERSION') == 'opencart-1.5.6.1')  
+		system("mysql -u root opencart1561 < " . dirname(__FILE__) . "/loadChargedBackCapture.sql");
+ 
+                if(getenv('OPENCART_VERSION') == 'opencart-1.5.5.1')  
 		system("mysql -u root opencart1551 < " . dirname(__FILE__) . "/loadChargedBackCapture.sql");
 		$order_id = 1000;
 	
@@ -103,7 +128,7 @@ class LitlePaymentControllerAdminTest extends OpenCartTest
 	
 		$controller->refund();
 		$redirectArgs = $controller->getRedirectArgs();
-		$this->assertEquals("http://sdk2/opencart-1.5.5.1/upload/admin/index.php?route=sale/order",$redirectArgs['url']);
+		$this->assertEquals("http://sdk2/" . getenv('OPENCART_VERSION') . "/upload/admin/index.php?route=sale/order",$redirectArgs['url']);
 		$this->assertEquals(302,$redirectArgs['status']);
 		$this->load->model('sale/order');
 		$order = $this->model_sale_order->getOrder($order_id);
@@ -113,6 +138,11 @@ class LitlePaymentControllerAdminTest extends OpenCartTest
 	
 	function test_refund_alreadyRefundedByFcps()
 	{
+
+                if(getenv('OPENCART_VERSION') == 'opencart-1.5.6.1')  
+		system("mysql -u root opencart1561 < " . dirname(__FILE__) . "/loadCaptureAlreadyRefundedByFcps.sql");
+ 
+                if(getenv('OPENCART_VERSION') == 'opencart-1.5.5.1')  
 		system("mysql -u root opencart1551 < " . dirname(__FILE__) . "/loadCaptureAlreadyRefundedByFcps.sql");
 		$order_id = 1000;
 	
@@ -123,7 +153,7 @@ class LitlePaymentControllerAdminTest extends OpenCartTest
 		$controller->refund();
 		
 		$redirectArgs = $controller->getRedirectArgs();
-		$this->assertEquals("http://sdk2/opencart-1.5.5.1/upload/admin/index.php?route=sale/order",$redirectArgs['url']);
+		$this->assertEquals("http://sdk2/" . getenv('OPENCART_VERSION') . "/upload/admin/index.php?route=sale/order",$redirectArgs['url']);
 		$this->assertEquals(302,$redirectArgs['status']);
 		
 		$this->load->model('sale/order');
