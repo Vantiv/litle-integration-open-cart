@@ -25,7 +25,7 @@ class OpenCartTest extends PHPUnit_Framework_TestCase {
 		if (file_exists ( $path )) {
 			require_once ($path);
 		} else {
-			throw new Exception ( 'OpenCart has to be installed first!' .  $_ENV['OPENCART_VERSION'] . '.' );
+			throw new Exception ( 'OpenCart has to be installed first!' .  $_OPENCART . '.' );
 		}
 	}
 	public function __construct() {
