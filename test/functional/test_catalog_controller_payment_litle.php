@@ -83,6 +83,34 @@ class LitlePaymentControllerTest extends OpenCartTest
 		$this->assertEquals("1", $orderHistory['notify']);
 	}
 	
+	function test_expiration_date()
+	{       if(getenv('OPENCART_VERSION') == 'opencart-1.5.6.1')  
+		system("mysql -u root opencart1561 < " . dirname(__FILE__) . "/loadOrderForCheckout.sql");
+ 
+                if(getenv('OPENCART_VERSION') == 'opencart-1.5.5.1')  
+		system("mysql -u root opencart1551 < " . dirname(__FILE__) . "/loadOrderForCheckout.sql");
+		
+		$order_id = 1000;
+				
+		$controller = $this->loadControllerByRoute("payment/litle");
+ 		$this->session->data['order_id'] = $order_id;
+ 		
+ 		$this->request->post['cc_cvv2'] = '123';
+ 		$this->request->post['cc_expire_date_month'] = '02';
+ 		$this->request->post['cc_expire_date_year'] = '2015';
+ 		$this->request->post['cc_number'] = '4100000000000001';
+ 		$this->request->post['cc_type'] = 'VI';
+                
+                $requestArray = $controller->getCreditCardInfo();
+		$this->assertEquals('0215',$requestArray['expDate']);
+		
+		$this->request->post['cc_expire_date_year'] = '2';
+		$this->request->post['cc_expire_date_year'] = '15';
+		
+		$requestArray = $controller->getCreditCardInfo();
+		$this->assertEquals('0215',$requestArray['expDate']);
+	}
+	
 	// https://github.com/LitleCo/litle-integration-open-cart/pull/2
 	function test_getAddressInfo_shouldReturnZoneForState()
 	{

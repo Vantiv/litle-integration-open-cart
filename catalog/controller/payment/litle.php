@@ -72,14 +72,13 @@ class ControllerPaymentLitle extends Controller {
 	
 	public function getCreditCardInfo()
 	{
-		$this->load->model('checkout/order');
-		$order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
-		
 		$retArray = array();
 		$retArray["type"] = $this->request->post['cc_type'];
  		$retArray["number"] = str_replace(' ', '', $this->request->post['cc_number']);
- 		//TODO: fix the logic for expDate
- 		$retArray["expDate"] = $this->request->post['cc_expire_date_month'] . ($this->request->post['cc_expire_date_year']-2000);
+		
+		$year = strlen($this->request->post['cc_expire_date_year']) == 2 ? $this->request->post['cc_expire_date_year'] : substr($this->request->post['cc_expire_date_year'], 2);
+		$month = (strlen($this->request->post['cc_expire_date_month']) == 1 ? '0' : '') . $this->request->post['cc_expire_date_month'];
+	        $retArray["expDate"] = $month.$year;
  		$retArray["cardValidationNum"] = $this->request->post['cc_cvv2'];
  		
  		return $retArray;
@@ -135,6 +134,7 @@ class ControllerPaymentLitle extends Controller {
  		$orderAmountToInsert = $this->getAmountInCorrectFormat($order_info['total']);
  		$litle_order_info = array(
  					'orderId'=> $order_info['order_id'],
+ 					'customerId'=> $order_info['customer_id'],
  					'amount'=> $orderAmountToInsert,
  					'orderSource'=> "ecommerce",
  					'billToAddress'=> $this->getAddressInfo($order_info, "payment"),
