@@ -77,7 +77,7 @@ class ControllerPaymentLitle extends Controller {
  		$retArray["number"] = str_replace(' ', '', $this->request->post['cc_number']);
 		
 		$year = strlen($this->request->post['cc_expire_date_year']) == 2 ? $this->request->post['cc_expire_date_year'] : substr($this->request->post['cc_expire_date_year'], 2);
-		$month = strlen($this->request->post['cc_expire_date_month']) == 1 ? '0' : '') . $this->request->post['cc_expire_date_month'];
+		$month = (strlen($this->request->post['cc_expire_date_month']) == 1 ? '0' : '') . $this->request->post['cc_expire_date_month'];
 	        $retArray["expDate"] = $month.$year;
  		$retArray["cardValidationNum"] = $this->request->post['cc_cvv2'];
  		
