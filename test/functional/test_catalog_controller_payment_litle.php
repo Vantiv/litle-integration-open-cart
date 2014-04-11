@@ -29,6 +29,12 @@ if(!defined("UNIT_TESTING")) {
 
 require_once realpath(dirname(__FILE__)) . "/OpenCartTest.php";
 
+define ( 'DB_NAME', getenv('OPENCART_DB_NAME') );
+define ( 'HOSTNAME', getenv('HOSTNAME'));
+define ( 'CONTEXT', getenv('OPENCART_CONTEXT'));
+define ( 'DB_USER', getenv('OPENCART_DB_USER'));
+
+
 class MockOpenBay{
 function orderNew($var){
  }
@@ -37,18 +43,12 @@ function orderNew($var){
 class LitlePaymentControllerTest extends OpenCartTest
 {
 	public function setUp() {
-                if(getenv('OPENCART_VERSION') == 'opencart-1.5.6.1')  
-		system("mysql -u root opencart1561 < " . dirname(__FILE__) . "/cleanup.sql");
-                if(getenv('OPENCART_VERSION') == 'opencart-1.5.5.1')  
-		system("mysql -u root opencart1551 < " . dirname(__FILE__) . "/cleanup.sql");
+	   $this->execute_sql('cleanup.sql');
 	}
 	
 	function test_successful_checkout()
-	{       if(getenv('OPENCART_VERSION') == 'opencart-1.5.6.1')  
-		system("mysql -u root opencart1561 < " . dirname(__FILE__) . "/loadOrderForCheckout.sql");
- 
-                if(getenv('OPENCART_VERSION') == 'opencart-1.5.5.1')  
-		system("mysql -u root opencart1551 < " . dirname(__FILE__) . "/loadOrderForCheckout.sql");
+	{
+	   $this->execute_sql('loadOrderForCheckout.sql');
 		
 		$order_id = 1000;
 				
@@ -62,9 +62,9 @@ class LitlePaymentControllerTest extends OpenCartTest
  		$this->request->post['cc_type'] = 'VI';
 		
 
-                $this->load->model('checkout/order');
-                $checkoutOrder = $this->model_checkout_order;
-                $checkoutOrder->openbay=new MockOpenBay();
+        $this->load->model('checkout/order');
+        $checkoutOrder = $this->model_checkout_order;
+        $checkoutOrder->openbay=new MockOpenBay();
 
 		$controller->send();
 		
@@ -73,7 +73,7 @@ class LitlePaymentControllerTest extends OpenCartTest
 		$this->assertEquals(1, $latest_order_status_id);
 
 		$output = $this->getOutput();
-		$this->assertEquals('{"success":"http:\/\/sdk2\/' . getenv('OPENCART_VERSION') . '\/upload\/index.php?route=checkout\/success"}', $output);
+		$this->assertEquals('{"success":"http:\/\/' . HOSTNAME . '\/' . CONTEXT . '\/index.php?route=checkout\/success"}', $output);
 		
 		$this->load->model('account/order');
 		$orderHistories = $this->model_account_order->getOrderHistories($order_id);
@@ -83,12 +83,10 @@ class LitlePaymentControllerTest extends OpenCartTest
 		$this->assertEquals("1", $orderHistory['notify']);
 	}
 	
+	// https://github.com/LitleCo/litle-integration-open-cart/pull/3
 	function test_expiration_date()
-	{       if(getenv('OPENCART_VERSION') == 'opencart-1.5.6.1')  
-		system("mysql -u root opencart1561 < " . dirname(__FILE__) . "/loadOrderForCheckout.sql");
- 
-                if(getenv('OPENCART_VERSION') == 'opencart-1.5.5.1')  
-		system("mysql -u root opencart1551 < " . dirname(__FILE__) . "/loadOrderForCheckout.sql");
+	{
+ 	    $this->execute_sql('loadOrderForCheckout.sql');
 		
 		$order_id = 1000;
 				
@@ -101,7 +99,7 @@ class LitlePaymentControllerTest extends OpenCartTest
  		$this->request->post['cc_number'] = '4100000000000001';
  		$this->request->post['cc_type'] = 'VI';
                 
-                $requestArray = $controller->getCreditCardInfo();
+        $requestArray = $controller->getCreditCardInfo();
 		$this->assertEquals('0215',$requestArray['expDate']);
 		
 		$this->request->post['cc_expire_date_year'] = '2';

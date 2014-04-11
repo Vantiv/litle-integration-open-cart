@@ -1,7 +1,7 @@
 <?php
 
-// TODO: check for a better way to get the root of the opencart installation
-define ( 'OC_ROOT', "/var/www/html/" . getenv("OPENCART_VERSION") .  "/upload/" );
+define ( 'OC_ROOT', "/var/www/html/" . getenv("OPENCART_CONTEXT") . '/' );
+
 class OpenCartTest extends PHPUnit_Framework_TestCase {
 	protected $registry;
 	protected $front;
@@ -25,7 +25,7 @@ class OpenCartTest extends PHPUnit_Framework_TestCase {
 		if (file_exists ( $path )) {
 			require_once ($path);
 		} else {
-			throw new Exception ( 'OpenCart has to be installed first!' .  self::$_OPENCART  . '.' );
+			throw new Exception ( 'OpenCart has to be installed first!' .  self::$_OPENCART  . ' with path ' . $path );
 		}
 	}
 	public function __construct() {
@@ -267,4 +267,10 @@ class OpenCartTest extends PHPUnit_Framework_TestCase {
 		
 		return $this->$model;
 	}
+	
+    function execute_sql($fileName) {
+       $cmd = "mysql -u " . DB_USER . " " . DB_NAME . " < " . dirname(__FILE__) . "/" . $fileName;
+       system($cmd);
+    }
+	
 }
