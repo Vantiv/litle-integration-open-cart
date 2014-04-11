@@ -270,7 +270,6 @@ class OpenCartTest extends PHPUnit_Framework_TestCase {
 	
     function execute_sql($fileName) {
        $cmd = "mysql -u " . DB_USER . " " . DB_NAME . " < " . dirname(__FILE__) . "/" . $fileName;
-       echo $cmd . '\n';
        system($cmd);
     }
 	

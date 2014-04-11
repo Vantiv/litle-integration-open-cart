@@ -33,6 +33,7 @@ define ( 'DB_NAME', getenv('OPENCART_DB_NAME') );
 define ( 'HOSTNAME', getenv('HOSTNAME'));
 define ( 'CONTEXT', getenv('OPENCART_CONTEXT'));
 define ( 'DB_USER', getenv('OPENCART_DB_USER'));
+define ( 'CONTEXT_ESCAPED', str_replace(CONTEXT, "/", "\/"));
 
 
 class MockOpenBay{
@@ -72,8 +73,9 @@ class LitlePaymentControllerTest extends OpenCartTest
 		$latest_order_status_id = $order['order_status_id'];
 		$this->assertEquals(1, $latest_order_status_id);
 
+        $json = '{"success":"http://' . HOSTNAME . '/' . CONTEXT . '/index.php?route=checkout/success"}';
 		$output = $this->getOutput();
-		$this->assertEquals('{"success":"http:\/\/' . HOSTNAME . '\/' . CONTEXT . '\/index.php?route=checkout\/success"}', $output);
+		$this->assertEquals(str_replace('/', '\/', $json), $output);
 		
 		$this->load->model('account/order');
 		$orderHistories = $this->model_account_order->getOrderHistories($order_id);
