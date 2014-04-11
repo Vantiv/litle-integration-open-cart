@@ -33,8 +33,6 @@ define ( 'DB_NAME', getenv('OPENCART_DB_NAME') );
 define ( 'HOSTNAME', getenv('HOSTNAME'));
 define ( 'CONTEXT', getenv('OPENCART_CONTEXT'));
 define ( 'DB_USER', getenv('OPENCART_DB_USER'));
-define ( 'CONTEXT_ESCAPED', str_replace(CONTEXT, "/", "\/"));
-
 
 class MockOpenBay{
 function orderNew($var){
