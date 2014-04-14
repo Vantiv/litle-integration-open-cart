@@ -1,5 +1,11 @@
 = Litle-Integration-Open-Cart CHANGELOG
 
+== Version 8.24.0 (April 14, 2014)
+
+* Feature: Adding customerId - https://github.com/LitleCo/litle-integration-open-cart/pull/3
+* Feature: Adding id for dupe check
+* Bugfix: Fix expiration date log - https://github.com/LitleCo/litle-integration-open-cart/pull/5
+
 == Version 8.17.2 (July 31, 2013)
 
 * Bugfix: Support billing state properly. See https://github.com/LitleCo/litle-integration-open-cart/pull/2
