@@ -225,7 +225,9 @@ class Obj2xml {
 					$config['version'] = isset($config_array['version'])? $config_array['version']:CURRENT_XML_VERSION;
 				}else if ($name == 'timeout'){
 						$config['timeout'] = isset($config_array['timeout'])? $config_array['timeout']:'65';
-				}else {
+				}else if ($name == 'print_xml'){
+                        $config['print_xml'] = isset($config_array['print_xml'])? $config_array['print_xml']:'false';
+                }else {
 					if ((!isset($config_array[$name])) and ($name != 'proxy')){
 						throw new InvalidArgumentException("Missing Field /$name/");
 					}
