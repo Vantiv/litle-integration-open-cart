@@ -4,3 +4,4 @@ admin/config.php
 image/cache
 system/cache
 /reports
+vendor/

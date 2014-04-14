@@ -196,7 +196,8 @@ class XmlFields
 						"capability"=>(Checker::requiredField(XmlFields::returnArrayValue($hash_in, "capability"))),
 						"entryMode"=>(Checker::requiredField(XmlFields::returnArrayValue($hash_in, "entryMode"))),
 						"cardholderId"=>(Checker::requiredField(XmlFields::returnArrayValue($hash_in, "cardholderId"))),
-						"terminalId"=>XmlFields::returnArrayValue($hash_in,"terminalId")
+						"terminalId"=>XmlFields::returnArrayValue($hash_in,"terminalId"),
+						"catLevel"=>XmlFields::returnArrayValue($hash_in,"catLevel"),
 			);
 			return $hash_out;
 		}
@@ -460,5 +461,72 @@ class XmlFields
 			);
 			return $hash_out;
 		}
+	}
+	
+	
+	
+	public static function recurringRequestType($hash_in)
+	{
+		if(isset($hash_in))
+		{
+			$hash_out = array(
+					"subscription"=>(XmlFields::recurringSubscriptionType(XmlFields::returnArrayValue($hash_in,"subscription")))
+			);
+			return $hash_out;		
+		}
+	}
+	
+	public static function recurringSubscriptionType($hash_in) {
+		if(isset($hash_in))
+		{
+			$hash_out = array(
+					"planCode"=>(Checker::requiredField(XmlFields::returnArrayValue($hash_in, "planCode"))),
+					"numberOfPayments"=>(XmlFields::returnArrayValue($hash_in, "numberOfPayments")),
+					"startDate"=>(XmlFields::returnArrayValue($hash_in, "startDate")),
+					"amount"=>(XmlFields::returnArrayValue($hash_in, "amount")),
+			);
+			return $hash_out;
+		}
+	}
+	
+	public static function litleInternalRecurringRequestType($hash_in)
+	{
+		if(isset($hash_in))
+		{
+			$hash_out = array(
+					"subscriptionId"=>(Checker::requiredField(XmlFields::returnArrayValue($hash_in, "subscriptionId"))),
+					"recurringTxnId"=>(Checker::requiredField(XmlFields::returnArrayValue($hash_in, "recurringTxnId")))
+			);
+			return $hash_out;
+		}
+	}
+	
+	public static function advancedFraudChecksType($hash_in)
+    {
+        if (isset($hash_in))
+        {
+            $hash_out = array(
+                "threatMetrixSessionId"=>(Checker::requiredField(XmlFields::returnArrayValue($hash_in, "threatMetrixSessionId", 128)))
+            );
+            return $hash_out;
+        }
+    }
+
+	public static function mposType($hash_in)
+	{
+		if(isset($hash_in))
+		{
+			$hash_out = array(
+   			"ksn"=>(Checker::requiredField(XmlFields::returnArrayValue($hash_in, "ksn", 1028))),
+			"formatId"=>(Checker::requiredField(XmlFields::returnArrayValue($hash_in, "formatId", 1028))),
+			"encryptedTrack"=>(Checker::requiredField(XmlFields::returnArrayValue($hash_in, "encryptedTrack", 1028))),
+			"track1Status"=>(Checker::requiredField(XmlFields::returnArrayValue($hash_in, "track1Status", 1028))),
+			"track2Status"=>(Checker::requiredField(XmlFields::returnArrayValue($hash_in, "track2Status", 1028)))
+			);	
+			return $hash_out;
+		}		
+		
+
+
 	}
 }

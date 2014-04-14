@@ -23,7 +23,11 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  */
-define('CURRENT_XML_VERSION', '8.17');
+define('CURRENT_XML_VERSION', '8.24');
+define('CURRENT_SDK_VERSION', 'PHP;8.24.0');
+define('MAX_TXNS_PER_BATCH', 100000);
+define('MAX_TXNS_PER_REQUEST', 500000);
+define('LITLE_CONFIG_LIST', 'user,password,merchantId,timeout,proxy,reportGroup,version,url,litle_requests_path,batch_requests_path,sftp_username,sftp_password,batch_url,tcp_port,tcp_ssl,tcp_timeout,print_xml');
 require_once realpath(dirname(__FILE__)) . '/LitleXmlMapper.php';
 require_once realpath(dirname(__FILE__)) . '/XmlFields.php';
 require_once realpath(dirname(__FILE__)) . '/Communication.php';
@@ -32,3 +36,12 @@ require_once realpath(dirname(__FILE__)) . '/Obj2xml.php';
 require_once realpath(dirname(__FILE__)) . '/Checker.php';
 require_once realpath(dirname(__FILE__)) . '/LitleOnlineRequest.php';
 require_once realpath(dirname(__FILE__)) . '/UrlMapper.php';
+require_once realpath(dirname(__FILE__)) . '/BatchRequest.php';
+require_once realpath(dirname(__FILE__)) . '/LitleRequest.php';
+require_once realpath(dirname(__FILE__)) . '/Transactions.php';
+require_once realpath(dirname(__FILE__)) . '/LitleResponseProcessor.php';
+// Only Load if exists
+if (file_exists(realpath(dirname(__FILE__) . '/../vendor/autoload.php')))
+{
+    require realpath(dirname(__FILE__)) . '/../vendor/autoload.php';
+}

@@ -25,12 +25,12 @@
 require_once realpath(dirname(__FILE__)) . '/LitleOnline.php';
 class Obj2xml {
 
-	public static function toXml($data, $hash_config, $type, $rootNodeName = 'litleOnlineRequest', $xml=null)
+	public static function toXml($data, $hash_config, $type, $rootNodeName = 'litleOnlineRequest')
 	{
-		$config= Obj2xml::getConfig($hash_config);
+		$config= Obj2xml::getConfig($hash_config, $type);
 		$xml = simplexml_load_string("<?xml version='1.0' encoding='utf-8'?><$rootNodeName />");
 		$xml-> addAttribute('merchantId',$config["merchantId"]);
-		$xml-> addAttribute('version','8.18');
+		$xml-> addAttribute('version',CURRENT_XML_VERSION);
 		$xml-> addAttribute('merchantSdk',$data['merchantSdk']);
 		unset($data['merchantSdk']);
 		if(isset($data['loggedInUser'])) {
@@ -43,22 +43,136 @@ class Obj2xml {
 		$authentication->addChild('password',$config["password"]);
 		$transacType = $xml->addChild($type);
 		if(isset($data['partial'])) {
-			($transacType-> addAttribute('partial',$data["partial"]));
+			$transacType-> addAttribute('partial',$data["partial"]);
 		};
 		unset($data['partial']);
 		if(isset($data['customerId'])) {
-			($transacType-> addAttribute('customerId',$data["customerId"]));
+			$transacType-> addAttribute('customerId',$data["customerId"]);
 		};
 		unset($data['customerId']);
 		if(isset($config['reportGroup'])) {
-			($transacType-> addAttribute('reportGroup',$config["reportGroup"]));
+			$transacType-> addAttribute('reportGroup',$config["reportGroup"]);
 		};
 		if(isset($data['id'])) {
-			($transacType-> addAttribute('id',$data["id"]));
+			$transacType-> addAttribute('id',$data["id"]);
 		};
 		unset($data['id']);
 		Obj2xml::iterateChildren($data,$transacType);
 		return $xml->asXML();
+	}
+	
+	public static function transactionShouldHaveReportGroup($transactionType) {
+          $transactionsThatDontHaveReportGroup = array(
+            'updateSubscription',
+            'cancelSubscription',
+            'createPlan',
+            'updatePlan'
+        );
+        return (FALSE === array_search($transactionType, $transactionsThatDontHaveReportGroup));
+	}
+
+	public static function transactionToXml($data, $type, $report_group){
+		
+		$transac = simplexml_load_string("<$type />");
+		if(Obj2xml::transactionShouldHaveReportGroup($type)) {
+		    $transac->addAttribute('reportGroup', $report_group);
+		}
+		Obj2xml::iterateChildren($data,$transac);
+		
+		return str_replace("<?xml version=\"1.0\"?>\n", "", $transac->asXML());
+	}
+	
+	public static function rfrRequestToXml($hash_in){
+		$rfr = simplexml_load_string("<RFRRequest />");
+		if(isset($hash_in['litleSessionId'])){
+			$rfr->addChild('litleSessionId', $hash_in['litleSessionId']);
+		}
+		else if(isset($hash_in['merchantId']) && isset($hash_in['postDay'])){
+			$auFileRequest = $rfr->addChild('accountUpdateFileRequestData');
+			$auFileRequest->addChild('merchantId', $hash_in['merchantId']);
+			$auFileRequest->addChild('postDay', $hash_in['postDay']);
+		}
+		else{
+			throw new RuntimeException('To add an RFR Request, either a litleSessionId or a merchantId and a postDay must be set.');
+		}
+		return str_replace("<?xml version=\"1.0\"?>\n", "", $rfr->asXML());
+	}
+
+	public static function generateBatchHeader($counts_and_amounts){
+		$config= Obj2xml::getConfig(array());
+		
+		$xml = simplexml_load_string("<batchRequest />");
+		$xml->addAttribute('merchantId', $config['merchantId']);
+		$xml->addAttribute('merchantSdk', CURRENT_SDK_VERSION);
+		
+		$xml->addAttribute('authAmount', $counts_and_amounts['auth']['amount']);
+		$xml->addAttribute('numAuths', $counts_and_amounts['auth']['count']);
+		
+		$xml->addAttribute('saleAmount', $counts_and_amounts['sale']['amount']);
+		$xml->addAttribute('numSales', $counts_and_amounts['sale']['count']);
+		
+		$xml->addAttribute('creditAmount', $counts_and_amounts['credit']['amount']);
+		$xml->addAttribute('numCredits', $counts_and_amounts['credit']['count']);
+		
+		$xml->addAttribute('numTokenRegistrations', $counts_and_amounts['tokenRegistration']['count']);
+		
+		$xml->addAttribute('captureGivenAuthAmount', $counts_and_amounts['captureGivenAuth']['amount']);
+		$xml->addAttribute('numCaptureGivenAuths', $counts_and_amounts['captureGivenAuth']['count']);
+	
+		$xml->addAttribute('forceCaptureAmount', $counts_and_amounts['forceCapture']['amount']);
+		$xml->addAttribute('numForceCaptures', $counts_and_amounts['forceCapture']['count']);
+		
+		$xml->addAttribute('authReversalAmount', $counts_and_amounts['authReversal']['amount']);
+		$xml->addAttribute('numAuthReversals', $counts_and_amounts['authReversal']['count']);
+		
+		$xml->addAttribute('captureAmount', $counts_and_amounts['capture']['amount']);
+		$xml->addAttribute('numCaptures', $counts_and_amounts['capture']['count']);
+		
+		$xml->addAttribute('echeckVerificationAmount', $counts_and_amounts['echeckVerification']['amount']);
+		$xml->addAttribute('numEcheckVerification', $counts_and_amounts['echeckVerification']['count']);
+		
+		$xml->addAttribute('echeckCreditAmount', $counts_and_amounts['echeckCredit']['amount']);
+		$xml->addAttribute('numEcheckCredit', $counts_and_amounts['echeckCredit']['count']);
+		
+		$xml->addAttribute('numEcheckRedeposit', $counts_and_amounts['echeckRedeposit']['count']);
+		
+		$xml->addAttribute('echeckSalesAmount', $counts_and_amounts['echeckSale']['amount']);
+		$xml->addAttribute('numEcheckSales', $counts_and_amounts['echeckSale']['count']);
+		
+		$xml->addAttribute('numUpdateCardValidationNumOnTokens', $counts_and_amounts['updateCardValidationNumOnToken']['count']);
+		
+		$xml->addAttribute('numUpdateSubscriptions', $counts_and_amounts['updateSubscription']['count']);
+		
+		$xml->addAttribute('numCancelSubscriptions', $counts_and_amounts['cancelSubscription']['count']);
+		
+		$xml->addAttribute('numCreatePlans', $counts_and_amounts['createPlan']['count']);
+		$xml->addAttribute('numUpdatePlans', $counts_and_amounts['updatePlan']['count']);
+		
+        $xml->addAttribute('numActivates', $counts_and_amounts['activate']['count']);
+		$xml->addAttribute('activateAmount', $counts_and_amounts['activate']['amount']);
+        $xml->addAttribute('numDeactivates', $counts_and_amounts['deactivate']['count']);
+        $xml->addAttribute('numLoads', $counts_and_amounts['load']['count']);
+		$xml->addAttribute('loadAmount', $counts_and_amounts['load']['amount']);
+        $xml->addAttribute('numUnloads', $counts_and_amounts['unload']['count']);
+		$xml->addAttribute('unloadAmount', $counts_and_amounts['unload']['amount']);
+        $xml->addAttribute('numBalanceInquirys', $counts_and_amounts['balanceInquiry']['count']);
+		
+		$xml->addAttribute('numAccountUpdates', $counts_and_amounts['accountUpdate']['count']);
+		
+		return str_replace("/>", ">", str_replace("<?xml version=\"1.0\"?>\n", "", $xml->asXML()));
+	}
+
+	public static function generateRequestHeader($config, $num_batch_requests){
+		$xml = simplexml_load_string("<litleRequest />");
+		
+		$xml->addAttribute('numBatchRequests', $num_batch_requests);
+		$xml->addAttribute('version', CURRENT_XML_VERSION);
+		$xml->addAttribute('xmlns:xmlns','http://www.litle.com/schema');
+		$authentication = $xml->addChild('authentication');
+		$authentication->addChild('user',$config["user"]);
+		$authentication->addChild('password',$config["password"]);
+		
+		return str_replace("<?xml version=\"1.0\"?>\n", "", str_replace("</litleRequest>", "", $xml->asXML()));
 	}
 
 	private static function iterateChildren($data,$transacType){
@@ -82,15 +196,22 @@ class Obj2xml {
 		}
 	}
 
-	public static function getConfig($data)
+	public static function getConfig($data, $type=NULL)
 	{
-		if(file_exists('litle_SDK_config.ini')) {
-			@$config_array =parse_ini_file('litle_SDK_config.ini');
-		}
-		else {
-			@$config_array = array();
-		}
-		$names = array('user','password','merchantId','timeout','proxy','reportGroup','version','url');
+        $config_array = null;
+
+	$ini_file = realpath(dirname(__FILE__)) . '/litle_SDK_config.ini';
+        if (file_exists($ini_file))
+        {
+            @$config_array =parse_ini_file('litle_SDK_config.ini');
+        }
+
+        if (empty($config_array))
+        {
+            $config_array = array();
+        }
+
+		$names = explode(',', LITLE_CONFIG_LIST);
 		foreach($names as $name)
 		{
 			if (isset($data[$name]))
@@ -112,6 +233,13 @@ class Obj2xml {
 				}
 			}
 		}
+        if($type == 'updateSubscription' || $type == 'cancelSubscription' || $type == 'createPlan' || $type == 'updatePlan') {
+            if(array_key_exists('reportGroup',$config)) {
+                unset($config['reportGroup']);
+                $config = array_filter($config);   
+            }
+        }
+		
 		return $config;
 	}
 }
