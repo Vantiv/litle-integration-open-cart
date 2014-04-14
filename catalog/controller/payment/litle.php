@@ -102,6 +102,7 @@ class ControllerPaymentLitle extends Controller {
 							'reportGroup'=>$this->config->get('litle_default_report_group'),
 							'url'=>UrlMapper::getUrl(trim($this->config->get('litle_url'))),	
 							'proxy'=>$this->config->get('litle_proxy_value'),
+							'print_xml'=>false,
 							'timeout'=>$this->config->get('litle_timeout_value')
 		);
 		return $hash;
