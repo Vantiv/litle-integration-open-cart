@@ -37,3 +37,11 @@ Setup
 8) After hitting submit, proceed to the admin panel and go to Sales->Orders. The new order should be dispayed here as well as the option to Capture, Reverse and View the auth. Click on "Capture" and a success message should be displayed on the top left of the form. 
 
 Please contact Lilte & Co. with any further questions.   You can reach us at SDKSupport@litle.com
+
+Questions and Answers
+------------------------------------------------
+1) I cannot choose Prelive as option in "URL" on admin page. How can I connect to Prelive now ?
+A : This is known problem. We are working to fix this. Meanwhile, you can change the admin/view/template/payment/litle.tpl
+    to add more options for different environments mentioned in system/library/litle/UrlMapper.php file. We added all right
+    URLs to UrlMapper.php but didnot add to litle.tpl file. Once added in .tpl file, they should be exposed on admin page
+    and it should work because real url mapped in UrlMapper.php are right urls.
