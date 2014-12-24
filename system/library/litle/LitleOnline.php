@@ -24,7 +24,7 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 define('CURRENT_XML_VERSION', '8.24');
-define('CURRENT_SDK_VERSION', 'PHP;8.24.0');
+define('CURRENT_SDK_VERSION', 'Opencart;8.17.3');
 define('MAX_TXNS_PER_BATCH', 100000);
 define('MAX_TXNS_PER_REQUEST', 500000);
 define('LITLE_CONFIG_LIST', 'user,password,merchantId,timeout,proxy,reportGroup,version,url,print_xml');

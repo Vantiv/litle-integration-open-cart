@@ -5,3 +5,4 @@ image/cache
 system/cache
 /reports
 vendor/
+/composer.lock
