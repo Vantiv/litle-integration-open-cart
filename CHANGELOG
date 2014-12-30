@@ -1,5 +1,9 @@
 = Litle-Integration-Open-Cart CHANGELOG
 
+== Version 8.24.1 (December 30, 2014)
+
+* Bugfix: Uses TLSv1 instead of SSLv3
+
 == Version 8.24.0 (April 14, 2014)
 
 * Feature: Adding customerId - https://github.com/LitleCo/litle-integration-open-cart/pull/3
