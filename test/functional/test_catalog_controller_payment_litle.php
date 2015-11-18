@@ -57,7 +57,7 @@ class LitlePaymentControllerTest extends OpenCartTest
  		$this->request->post['cc_cvv2'] = '123';
  		$this->request->post['cc_expire_date_month'] = '02';
  		$this->request->post['cc_expire_date_year'] = '2015';
- 		$this->request->post['cc_number'] = '4100000000000001';
+ 		$this->request->post['cc_number'] = '4100000000000000';
  		$this->request->post['cc_type'] = 'VI';
 		
 
@@ -96,7 +96,7 @@ class LitlePaymentControllerTest extends OpenCartTest
  		$this->request->post['cc_cvv2'] = '123';
  		$this->request->post['cc_expire_date_month'] = '02';
  		$this->request->post['cc_expire_date_year'] = '2015';
- 		$this->request->post['cc_number'] = '4100000000000001';
+ 		$this->request->post['cc_number'] = '4100000000000000';
  		$this->request->post['cc_type'] = 'VI';
                 
         $requestArray = $controller->getCreditCardInfo();
