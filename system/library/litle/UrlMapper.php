@@ -38,7 +38,7 @@ class UrlMapper
     {
 		$litleOnlineCtx = 'vap/communicator/online';
 		if ($litleEnv == UrlMapper::SANDBOX)
-			return 'https://www.testlitle.com/sandbox/communicator/online';
+			return 'https://www.testvantivcnp.com/sandbox/communicator/online';
 		elseif ($litleEnv == UrlMapper::POSTLIVE)
 			return 'https://postlive.litle.com/' . $litleOnlineCtx;
 		elseif ($litleEnv == UrlMapper::BETACERT)
